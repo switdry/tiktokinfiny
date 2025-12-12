@@ -21,80 +21,58 @@ export class TTSService {
     }
 
     private initializeVoices(): void {
-        // Voces por defecto usando Google Cloud TTS (gratis hasta cierto límite)
         this.voices = [
-            {
-                id: 'es-ES-Standard-A',
-                name: 'Español (España) - Femenina',
-                language: 'es-ES',
-                gender: 'female',
-                provider: 'google',
-            },
-            {
-                id: 'es-ES-Standard-B',
-                name: 'Español (España) - Masculina',
-                language: 'es-ES',
-                gender: 'male',
-                provider: 'google',
-            },
-            {
-                id: 'es-MX-Standard-A',
-                name: 'Español (México) - Femenina',
-                language: 'es-MX',
-                gender: 'female',
-                provider: 'google',
-            },
-            {
-                id: 'es-MX-Standard-B',
-                name: 'Español (México) - Masculina',
-                language: 'es-MX',
-                gender: 'male',
-                provider: 'google',
-            },
-            {
-                id: 'es-US-Standard-A',
-                name: 'Español (EE.UU.) - Femenina',
-                language: 'es-US',
-                gender: 'female',
-                provider: 'google',
-            },
-            {
-                id: 'es-US-Standard-B',
-                name: 'Español (EE.UU.) - Masculina',
-                language: 'es-US',
-                gender: 'male',
-                provider: 'google',
-            },
+            { id: 'Brian', name: 'Brian (Inglés)', language: 'en-GB', gender: 'male', provider: 'streamelements' },
+            { id: 'Amy', name: 'Amy (Inglés)', language: 'en-GB', gender: 'female', provider: 'streamelements' },
+            { id: 'Emma', name: 'Emma (Inglés)', language: 'en-GB', gender: 'female', provider: 'streamelements' },
+            { id: 'Joanna', name: 'Joanna (Inglés US)', language: 'en-US', gender: 'female', provider: 'streamelements' },
+            { id: 'Joey', name: 'Joey (Inglés US)', language: 'en-US', gender: 'male', provider: 'streamelements' },
+            { id: 'Matthew', name: 'Matthew (Inglés US)', language: 'en-US', gender: 'male', provider: 'streamelements' },
+            { id: 'Conchita', name: 'Conchita (Español España)', language: 'es-ES', gender: 'female', provider: 'streamelements' },
+            { id: 'Enrique', name: 'Enrique (Español España)', language: 'es-ES', gender: 'male', provider: 'streamelements' },
+            { id: 'Lucia', name: 'Lucia (Español España)', language: 'es-ES', gender: 'female', provider: 'streamelements' },
+            { id: 'Mia', name: 'Mia (Español México)', language: 'es-MX', gender: 'female', provider: 'streamelements' },
+            { id: 'Miguel', name: 'Miguel (Español US)', language: 'es-US', gender: 'male', provider: 'streamelements' },
+            { id: 'Penelope', name: 'Penelope (Español US)', language: 'es-US', gender: 'female', provider: 'streamelements' },
+            { id: 'Lupe', name: 'Lupe (Español US)', language: 'es-US', gender: 'female', provider: 'streamelements' },
+            { id: 'Camila', name: 'Camila (Portugués Brasil)', language: 'pt-BR', gender: 'female', provider: 'streamelements' },
+            { id: 'Vitoria', name: 'Vitoria (Portugués Brasil)', language: 'pt-BR', gender: 'female', provider: 'streamelements' },
+            { id: 'Ricardo', name: 'Ricardo (Portugués Brasil)', language: 'pt-BR', gender: 'male', provider: 'streamelements' },
+            { id: 'Celine', name: 'Celine (Francés)', language: 'fr-FR', gender: 'female', provider: 'streamelements' },
+            { id: 'Mathieu', name: 'Mathieu (Francés)', language: 'fr-FR', gender: 'male', provider: 'streamelements' },
+            { id: 'Hans', name: 'Hans (Alemán)', language: 'de-DE', gender: 'male', provider: 'streamelements' },
+            { id: 'Marlene', name: 'Marlene (Alemán)', language: 'de-DE', gender: 'female', provider: 'streamelements' },
+            { id: 'Vicki', name: 'Vicki (Alemán)', language: 'de-DE', gender: 'female', provider: 'streamelements' },
+            { id: 'Giorgio', name: 'Giorgio (Italiano)', language: 'it-IT', gender: 'male', provider: 'streamelements' },
+            { id: 'Carla', name: 'Carla (Italiano)', language: 'it-IT', gender: 'female', provider: 'streamelements' },
+            { id: 'Bianca', name: 'Bianca (Italiano)', language: 'it-IT', gender: 'female', provider: 'streamelements' },
+            { id: 'Takumi', name: 'Takumi (Japonés)', language: 'ja-JP', gender: 'male', provider: 'streamelements' },
+            { id: 'Mizuki', name: 'Mizuki (Japonés)', language: 'ja-JP', gender: 'female', provider: 'streamelements' },
+            { id: 'Seoyeon', name: 'Seoyeon (Coreano)', language: 'ko-KR', gender: 'female', provider: 'streamelements' },
+            { id: 'Zhiyu', name: 'Zhiyu (Chino)', language: 'zh-CN', gender: 'female', provider: 'streamelements' },
+            { id: 'Filiz', name: 'Filiz (Turco)', language: 'tr-TR', gender: 'female', provider: 'streamelements' },
+            { id: 'Astrid', name: 'Astrid (Sueco)', language: 'sv-SE', gender: 'female', provider: 'streamelements' },
+            { id: 'Tatyana', name: 'Tatyana (Ruso)', language: 'ru-RU', gender: 'female', provider: 'streamelements' },
+            { id: 'Maxim', name: 'Maxim (Ruso)', language: 'ru-RU', gender: 'male', provider: 'streamelements' },
+            { id: 'Ewa', name: 'Ewa (Polaco)', language: 'pl-PL', gender: 'female', provider: 'streamelements' },
+            { id: 'Maja', name: 'Maja (Polaco)', language: 'pl-PL', gender: 'female', provider: 'streamelements' },
+            { id: 'Jan', name: 'Jan (Polaco)', language: 'pl-PL', gender: 'male', provider: 'streamelements' },
+            { id: 'Liv', name: 'Liv (Noruego)', language: 'nb-NO', gender: 'female', provider: 'streamelements' },
+            { id: 'Lotte', name: 'Lotte (Holandés)', language: 'nl-NL', gender: 'female', provider: 'streamelements' },
+            { id: 'Ruben', name: 'Ruben (Holandés)', language: 'nl-NL', gender: 'male', provider: 'streamelements' },
         ];
     }
 
     async getAvailableVoices(): Promise<RemoteVoice[]> {
-        // Si hay API key de Google Cloud, obtener voces reales
-        if (process.env.GOOGLE_CLOUD_API_KEY) {
-            try {
-                return await this.fetchGoogleVoices();
-            } catch (error) {
-                console.error('Error al obtener voces de Google:', error);
-            }
-        }
-
-        // Retornar voces por defecto
-        return this.voices;
-    }
-
-    private async fetchGoogleVoices(): Promise<RemoteVoice[]> {
-        // Implementación para obtener voces de Google Cloud TTS
-        // Por ahora retornamos las voces por defecto
         return this.voices;
     }
 
     async generateSpeech(
         text: string,
         voiceId: string,
-        provider: string = 'google',
+        _provider: string = 'streamelements',
         options: { speed?: number; volume?: number } = {}
     ): Promise<string> {
-        // Verificar cache primero
         const cacheKey = this.getCacheKey(text, voiceId, options);
         const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
 
@@ -102,123 +80,34 @@ export class TTSService {
             return `/cache/tts/${cacheKey}.mp3`;
         }
 
-        let audioUrl: string;
-
-        switch (provider) {
-            case 'google':
-                audioUrl = await this.generateGoogleTTS(text, voiceId, options);
-                break;
-            case 'elevenlabs':
-                audioUrl = await this.generateElevenLabsTTS(text, voiceId, options);
-                break;
-            case 'azure':
-                audioUrl = await this.generateAzureTTS(text, voiceId, options);
-                break;
-            default:
-                // Usar API gratuita alternativa
-                audioUrl = await this.generateFreeTTS(text, voiceId, options);
-        }
-
-        // Guardar en cache si es una URL local
-        if (audioUrl.startsWith('/')) {
-            // Ya está en el servidor
-            return audioUrl;
-        }
-
-        // Descargar y guardar en cache
         try {
-            const response = await axios.get(audioUrl, { responseType: 'arraybuffer' });
-            fs.writeFileSync(cachedFile, response.data);
-            return `/cache/tts/${cacheKey}.mp3`;
-        } catch (error) {
-            console.error('Error al guardar en cache:', error);
+            const audioUrl = await this.generateStreamElementsTTS(text, voiceId);
             return audioUrl;
-        }
-    }
-
-    private async generateGoogleTTS(
-        text: string,
-        voiceId: string,
-        options: { speed?: number; volume?: number }
-    ): Promise<string> {
-        // Usar API gratuita de Google Translate TTS
-        const language = voiceId.split('-')[0] + '-' + voiceId.split('-')[1];
-
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${language}&client=tw-ob&q=${encodeURIComponent(text)}`;
-        
-        // Descargar y guardar
-        const cacheKey = this.getCacheKey(text, voiceId, options);
-        const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
-
-        try {
-            const response = await axios.get(url, { responseType: 'arraybuffer' });
-            fs.writeFileSync(cachedFile, response.data);
-            return `/cache/tts/${cacheKey}.mp3`;
         } catch (error) {
-            console.error('Error al generar Google TTS:', error);
+            console.error('Error generating TTS:', error);
             throw error;
         }
     }
 
-    private async generateElevenLabsTTS(
-        text: string,
-        voiceId: string,
-        options: { speed?: number; volume?: number }
-    ): Promise<string> {
-        const apiKey = process.env.ELEVENLABS_API_KEY;
-        if (!apiKey) {
-            throw new Error('ElevenLabs API key no configurada');
-        }
-
-        const response = await axios.post(
-            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-            {
-                text: text,
-                model_id: 'eleven_multilingual_v2',
-                voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.75,
-                    speed: options.speed || 1.0,
-                },
-            },
-            {
-                headers: {
-                    'xi-api-key': apiKey,
-                    'Content-Type': 'application/json',
-                },
-                responseType: 'arraybuffer',
-            }
-        );
-
-        const cacheKey = this.getCacheKey(text, voiceId, options);
+    private async generateStreamElementsTTS(text: string, voiceId: string): Promise<string> {
+        const url = `https://api.streamelements.com/kappa/v2/speech?voice=${voiceId}&text=${encodeURIComponent(text)}`;
+        
+        const cacheKey = this.getCacheKey(text, voiceId, {});
         const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
-        fs.writeFileSync(cachedFile, response.data);
-        return `/cache/tts/${cacheKey}.mp3`;
-    }
 
-    private async generateAzureTTS(
-        _text: string,
-        _voiceId: string,
-        _options: { speed?: number; volume?: number }
-    ): Promise<string> {
-        const apiKey = process.env.AZURE_SPEECH_KEY;
-
-        if (!apiKey) {
-            throw new Error('Azure Speech API key no configurada');
+        try {
+            const response = await axios.get(url, { 
+                responseType: 'arraybuffer',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+            });
+            fs.writeFileSync(cachedFile, response.data);
+            return `/cache/tts/${cacheKey}.mp3`;
+        } catch (error) {
+            console.error('Error with StreamElements TTS:', error);
+            throw error;
         }
-
-        // Implementación de Azure TTS
-        // Por ahora lanzamos error
-        throw new Error('Azure TTS no implementado aún');
-    }
-
-    private async generateFreeTTS(
-        text: string,
-        voiceId: string,
-        options: { speed?: number; volume?: number }
-    ): Promise<string> {
-        // Usar Google Translate TTS como fallback gratuito
-        return this.generateGoogleTTS(text, voiceId, options);
     }
 
     private getCacheKey(text: string, voiceId: string, options: { speed?: number; volume?: number }): string {
@@ -228,5 +117,22 @@ export class TTSService {
             .digest('hex');
         return hash;
     }
-}
 
+    cleanCache(): void {
+        try {
+            const files = fs.readdirSync(this.cacheDir);
+            const now = Date.now();
+            const maxAge = 24 * 60 * 60 * 1000;
+
+            for (const file of files) {
+                const filePath = path.join(this.cacheDir, file);
+                const stats = fs.statSync(filePath);
+                if (now - stats.mtimeMs > maxAge) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+        } catch (error) {
+            console.error('Error cleaning cache:', error);
+        }
+    }
+}

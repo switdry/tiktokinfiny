@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget - TikFinity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            overflow: hidden;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .chat-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fe2c55, #25f4ee);
+            flex-shrink: 0;
+        }
+        .chat-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-username {
+            color: #25f4ee;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .chat-text {
+            color: #fff;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .no-messages {
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="no-messages">Esperando comentarios...</div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = window.location.pathname.split('/').pop() || urlParams.get('user');
+        const maxMessages = parseInt(urlParams.get('max') || '20');
+        const apiUrl = window.location.origin;
+        
+        const messagesContainer = document.getElementById('chatMessages');
+        let messages = [];
+
+        function addMessage(comment) {
+            messages.unshift(comment);
+            if (messages.length > maxMessages) {
+                messages = messages.slice(0, maxMessages);
+            }
+            renderMessages();
+        }
+
+        function renderMessages() {
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = '<div class="no-messages">Esperando comentarios...</div>';
+                return;
+            }
+
+            messagesContainer.innerHTML = messages.map(msg => `
+                <div class="chat-message">
+                    <img class="chat-avatar" src="${msg.profilePicUrl || ''}" onerror="this.style.display='none'" alt="">
+                    <div class="chat-content">
+                        <div class="chat-username">@${escapeHtml(msg.user)}</div>
+                        <div class="chat-text">${escapeHtml(msg.text)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function connectSSE() {
+            if (!username) {
+                messagesContainer.innerHTML = '<div class="no-messages">Usuario no especificado</div>';
+                return;
+            }
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'comment') {
+                        addMessage(data.data);
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                console.log('SSE connection error, reconnecting...');
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+
+        connectSSE();
+    </script>
+</body>
+</html>

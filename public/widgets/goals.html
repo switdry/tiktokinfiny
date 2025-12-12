@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goals Widget - TikFinity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            padding: 20px;
+        }
+        .goal-container {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+        }
+        .goal-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .goal-icon {
+            font-size: 24px;
+        }
+        .goal-progress {
+            position: relative;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .goal-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fe2c55, #25f4ee);
+            border-radius: 15px;
+            transition: width 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            min-width: 40px;
+        }
+        .goal-percent {
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .goal-stats {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        .goal-current {
+            color: #25f4ee;
+            font-weight: 600;
+        }
+        .goal-target {
+            color: #fe2c55;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="goal-container">
+        <div class="goal-title">
+            <span class="goal-icon" id="goalIcon">💎</span>
+            <span id="goalName">Meta de Diamantes</span>
+        </div>
+        <div class="goal-progress">
+            <div class="goal-bar" id="goalBar" style="width: 0%">
+                <span class="goal-percent" id="goalPercent">0%</span>
+            </div>
+        </div>
+        <div class="goal-stats">
+            <span>Actual: <span class="goal-current" id="goalCurrent">0</span></span>
+            <span>Meta: <span class="goal-target" id="goalTarget">1000</span></span>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = window.location.pathname.split('/').pop() || urlParams.get('user');
+        const goalType = urlParams.get('type') || 'diamonds';
+        const goalTarget = parseInt(urlParams.get('target') || '1000');
+        const goalName = urlParams.get('name') || 'Meta de Diamantes';
+        const apiUrl = window.location.origin;
+        
+        const goalBar = document.getElementById('goalBar');
+        const goalPercent = document.getElementById('goalPercent');
+        const goalCurrent = document.getElementById('goalCurrent');
+        const goalTargetEl = document.getElementById('goalTarget');
+        const goalNameEl = document.getElementById('goalName');
+        const goalIcon = document.getElementById('goalIcon');
+        
+        let currentValue = 0;
+        
+        goalNameEl.textContent = goalName;
+        goalTargetEl.textContent = goalTarget.toLocaleString();
+        
+        switch (goalType) {
+            case 'diamonds':
+                goalIcon.textContent = '💎';
+                break;
+            case 'gifts':
+                goalIcon.textContent = '🎁';
+                break;
+            case 'followers':
+                goalIcon.textContent = '👥';
+                break;
+            case 'likes':
+                goalIcon.textContent = '❤️';
+                break;
+        }
+
+        function updateProgress(value) {
+            currentValue = value;
+            const percent = Math.min(100, (currentValue / goalTarget) * 100);
+            goalBar.style.width = `${percent}%`;
+            goalPercent.textContent = `${Math.round(percent)}%`;
+            goalCurrent.textContent = currentValue.toLocaleString();
+        }
+
+        function connectSSE() {
+            if (!username) return;
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'gift' && (goalType === 'diamonds' || goalType === 'gifts')) {
+                        if (goalType === 'diamonds') {
+                            currentValue += data.data.diamondCount * data.data.repeatCount;
+                        } else {
+                            currentValue += data.data.repeatCount;
+                        }
+                        updateProgress(currentValue);
+                    } else if (data.type === 'follow' && goalType === 'followers') {
+                        currentValue += 1;
+                        updateProgress(currentValue);
+                    } else if (data.type === 'like' && goalType === 'likes') {
+                        currentValue = data.data.totalLikeCount;
+                        updateProgress(currentValue);
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+
+        updateProgress(0);
+        connectSSE();
+    </script>
+</body>
+</html>

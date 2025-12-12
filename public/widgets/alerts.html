@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts Widget - TikFinity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .alert-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+        .alert {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(254, 44, 85, 0.9), rgba(37, 244, 238, 0.9));
+            border-radius: 20px;
+            animation: alertIn 0.5s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .alert.show {
+            display: flex;
+        }
+        @keyframes alertIn {
+            0% { opacity: 0; transform: scale(0.5) translateY(50px); }
+            50% { transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes alertOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8) translateY(-30px); }
+        }
+        .alert.hide {
+            animation: alertOut 0.3s ease-in forwards;
+        }
+        .alert-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        .alert-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .alert-username {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .alert-details {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin-top: 10px;
+        }
+        .gift-alert {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 140, 0, 0.95));
+        }
+        .follow-alert {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.95), rgba(75, 0, 130, 0.95));
+        }
+        .share-alert {
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.95), rgba(30, 144, 255, 0.95));
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-container">
+        <div class="alert" id="alertBox">
+            <div class="alert-icon" id="alertIcon"></div>
+            <div class="alert-title" id="alertTitle"></div>
+            <div class="alert-username" id="alertUsername"></div>
+            <div class="alert-details" id="alertDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = window.location.pathname.split('/').pop() || urlParams.get('user');
+        const duration = parseInt(urlParams.get('duration') || '5000');
+        const apiUrl = window.location.origin;
+        
+        const alertBox = document.getElementById('alertBox');
+        const alertIcon = document.getElementById('alertIcon');
+        const alertTitle = document.getElementById('alertTitle');
+        const alertUsername = document.getElementById('alertUsername');
+        const alertDetails = document.getElementById('alertDetails');
+        
+        let alertQueue = [];
+        let isShowing = false;
+
+        function showAlert(type, data) {
+            alertQueue.push({ type, data });
+            processQueue();
+        }
+
+        function processQueue() {
+            if (isShowing || alertQueue.length === 0) return;
+            
+            isShowing = true;
+            const { type, data } = alertQueue.shift();
+            
+            alertBox.className = 'alert show';
+            
+            switch (type) {
+                case 'gift':
+                    alertBox.classList.add('gift-alert');
+                    alertIcon.textContent = '🎁';
+                    alertTitle.textContent = 'NUEVO REGALO';
+                    alertUsername.textContent = `@${data.user}`;
+                    alertDetails.textContent = `${data.repeatCount}x ${data.giftName} (${data.diamondCount} 💎)`;
+                    break;
+                case 'follow':
+                    alertBox.classList.add('follow-alert');
+                    alertIcon.textContent = '👤';
+                    alertTitle.textContent = 'NUEVO SEGUIDOR';
+                    alertUsername.textContent = `@${data.user}`;
+                    alertDetails.textContent = '¡Gracias por seguir!';
+                    break;
+                case 'share':
+                    alertBox.classList.add('share-alert');
+                    alertIcon.textContent = '📤';
+                    alertTitle.textContent = 'COMPARTIDO';
+                    alertUsername.textContent = `@${data.user}`;
+                    alertDetails.textContent = '¡Gracias por compartir!';
+                    break;
+            }
+            
+            setTimeout(() => {
+                alertBox.classList.add('hide');
+                setTimeout(() => {
+                    alertBox.className = 'alert';
+                    isShowing = false;
+                    processQueue();
+                }, 300);
+            }, duration);
+        }
+
+        function connectSSE() {
+            if (!username) return;
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (['gift', 'follow', 'share'].includes(data.type)) {
+                        showAlert(data.type, data.data);
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+
+        connectSSE();
+    </script>
+</body>
+</html>
