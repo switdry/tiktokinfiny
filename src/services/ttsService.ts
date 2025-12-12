@@ -1,35 +1,19 @@
 import { RemoteVoice } from '../types';
 import axios from 'axios';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
 
 export class TTSService {
     private voices: RemoteVoice[] = [];
-    private cacheDir: string;
 
     constructor() {
-        this.cacheDir = path.join(process.cwd(), 'cache', 'tts');
-        this.ensureCacheDir();
         this.initializeVoices();
-    }
-
-    private ensureCacheDir(): void {
-        if (!fs.existsSync(this.cacheDir)) {
-            fs.mkdirSync(this.cacheDir, { recursive: true });
-        }
     }
 
     private initializeVoices(): void {
         this.voices = [
             { id: 'es', name: 'Español', language: 'es', gender: 'female', provider: 'google' },
             { id: 'es-MX', name: 'Español México', language: 'es-MX', gender: 'female', provider: 'google' },
-            { id: 'es-ES', name: 'Español España', language: 'es-ES', gender: 'female', provider: 'google' },
             { id: 'en', name: 'English', language: 'en', gender: 'female', provider: 'google' },
-            { id: 'en-US', name: 'English US', language: 'en-US', gender: 'female', provider: 'google' },
-            { id: 'en-GB', name: 'English UK', language: 'en-GB', gender: 'female', provider: 'google' },
             { id: 'pt', name: 'Português', language: 'pt', gender: 'female', provider: 'google' },
-            { id: 'pt-BR', name: 'Português Brasil', language: 'pt-BR', gender: 'female', provider: 'google' },
             { id: 'fr', name: 'Français', language: 'fr', gender: 'female', provider: 'google' },
             { id: 'de', name: 'Deutsch', language: 'de', gender: 'female', provider: 'google' },
             { id: 'it', name: 'Italiano', language: 'it', gender: 'female', provider: 'google' },
@@ -37,38 +21,11 @@ export class TTSService {
             { id: 'ko', name: '한국어', language: 'ko', gender: 'female', provider: 'google' },
             { id: 'zh-CN', name: '中文', language: 'zh-CN', gender: 'female', provider: 'google' },
             { id: 'ru', name: 'Русский', language: 'ru', gender: 'female', provider: 'google' },
-            { id: 'ar', name: 'العربية', language: 'ar', gender: 'female', provider: 'google' },
-            { id: 'hi', name: 'हिन्दी', language: 'hi', gender: 'female', provider: 'google' },
-            { id: 'tr', name: 'Türkçe', language: 'tr', gender: 'female', provider: 'google' },
-            { id: 'pl', name: 'Polski', language: 'pl', gender: 'female', provider: 'google' },
-            { id: 'nl', name: 'Nederlands', language: 'nl', gender: 'female', provider: 'google' },
         ];
     }
 
     async getAvailableVoices(): Promise<RemoteVoice[]> {
         return this.voices;
-    }
-
-    async generateSpeech(
-        text: string,
-        voiceId: string,
-        _provider: string = 'google',
-        options: { speed?: number; volume?: number } = {}
-    ): Promise<string> {
-        const cacheKey = this.getCacheKey(text, voiceId, options);
-        const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
-
-        if (fs.existsSync(cachedFile)) {
-            return `/cache/tts/${cacheKey}.mp3`;
-        }
-
-        try {
-            const audioUrl = await this.generateGoogleTTS(text, voiceId, cacheKey);
-            return audioUrl;
-        } catch (error) {
-            console.error('Error generating TTS:', error);
-            throw error;
-        }
     }
 
     private normalizeLanguageCode(voiceId: string): string {
@@ -81,31 +38,23 @@ export class TTSService {
             'Giorgio': 'it', 'Carla': 'it', 'Bianca': 'it',
             'Takumi': 'ja', 'Mizuki': 'ja',
             'Seoyeon': 'ko', 'Zhiyu': 'zh-CN',
-            'Filiz': 'tr', 'Astrid': 'sv', 'Tatyana': 'ru', 'Maxim': 'ru',
-            'Ewa': 'pl', 'Maja': 'pl', 'Jan': 'pl', 'Liv': 'nb', 'Lotte': 'nl', 'Ruben': 'nl'
         };
         
-        if (langMap[voiceId]) {
-            return langMap[voiceId];
-        }
+        if (langMap[voiceId]) return langMap[voiceId];
         
-        const validLangs = ['es', 'en', 'pt', 'fr', 'de', 'it', 'ja', 'ko', 'zh-CN', 'ru', 'ar', 'hi', 'tr', 'pl', 'nl', 'es-MX', 'es-ES', 'en-US', 'en-GB', 'pt-BR'];
-        if (validLangs.includes(voiceId)) {
-            return voiceId;
-        }
+        const validLangs = ['es', 'en', 'pt', 'fr', 'de', 'it', 'ja', 'ko', 'zh-CN', 'ru', 'ar', 'hi', 'tr', 'pl', 'nl'];
+        if (validLangs.includes(voiceId)) return voiceId;
         
         return 'es';
     }
 
-    private async generateGoogleTTS(text: string, lang: string, cacheKey: string): Promise<string> {
-        const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
-        const normalizedLang = this.normalizeLanguageCode(lang);
-        
+    async generateSpeechBuffer(text: string, voiceId: string): Promise<Buffer> {
+        const lang = this.normalizeLanguageCode(voiceId);
         const textChunks = this.splitTextIntoChunks(text, 200);
         const audioBuffers: Buffer[] = [];
 
         for (const chunk of textChunks) {
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${normalizedLang}&client=tw-ob`;
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${lang}&client=tw-ob`;
             
             try {
                 const response = await axios.get(url, { 
@@ -118,81 +67,31 @@ export class TTSService {
                 });
                 audioBuffers.push(Buffer.from(response.data));
             } catch (error: any) {
-                console.error('Error with Google TTS chunk:', error?.message);
+                console.error('Error with Google TTS:', error?.message);
                 throw error;
             }
         }
 
-        const combinedBuffer = Buffer.concat(audioBuffers);
-        fs.writeFileSync(cachedFile, combinedBuffer);
-        return `/cache/tts/${cacheKey}.mp3`;
+        return Buffer.concat(audioBuffers);
     }
 
     private splitTextIntoChunks(text: string, maxLength: number): string[] {
-        if (text.length <= maxLength) {
-            return [text];
-        }
+        if (text.length <= maxLength) return [text];
 
         const chunks: string[] = [];
-        const sentences = text.split(/(?<=[.!?])\s+/);
+        const words = text.split(' ');
         let currentChunk = '';
 
-        for (const sentence of sentences) {
-            if ((currentChunk + ' ' + sentence).trim().length <= maxLength) {
-                currentChunk = (currentChunk + ' ' + sentence).trim();
+        for (const word of words) {
+            if ((currentChunk + ' ' + word).trim().length <= maxLength) {
+                currentChunk = (currentChunk + ' ' + word).trim();
             } else {
-                if (currentChunk) {
-                    chunks.push(currentChunk);
-                }
-                if (sentence.length > maxLength) {
-                    const words = sentence.split(' ');
-                    currentChunk = '';
-                    for (const word of words) {
-                        if ((currentChunk + ' ' + word).trim().length <= maxLength) {
-                            currentChunk = (currentChunk + ' ' + word).trim();
-                        } else {
-                            if (currentChunk) {
-                                chunks.push(currentChunk);
-                            }
-                            currentChunk = word;
-                        }
-                    }
-                } else {
-                    currentChunk = sentence;
-                }
+                if (currentChunk) chunks.push(currentChunk);
+                currentChunk = word;
             }
         }
-
-        if (currentChunk) {
-            chunks.push(currentChunk);
-        }
+        if (currentChunk) chunks.push(currentChunk);
 
         return chunks;
-    }
-
-    private getCacheKey(text: string, voiceId: string, options: { speed?: number; volume?: number }): string {
-        const hash = crypto
-            .createHash('md5')
-            .update(`${text}-${voiceId}-${options.speed || 1.0}-${options.volume || 1.0}`)
-            .digest('hex');
-        return hash;
-    }
-
-    cleanCache(): void {
-        try {
-            const files = fs.readdirSync(this.cacheDir);
-            const now = Date.now();
-            const maxAge = 24 * 60 * 60 * 1000;
-
-            for (const file of files) {
-                const filePath = path.join(this.cacheDir, file);
-                const stats = fs.statSync(filePath);
-                if (now - stats.mtimeMs > maxAge) {
-                    fs.unlinkSync(filePath);
-                }
-            }
-        } catch (error) {
-            console.error('Error cleaning cache:', error);
-        }
     }
 }

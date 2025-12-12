@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewers Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: transparent;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .viewers-container {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .viewers-count {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .viewers-label {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewers-container" id="viewersContainer">
+        <div class="viewers-count" id="viewersCount">0</div>
+        <div class="viewers-label">Espectadores</div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('user') || window.location.pathname.split('/').pop();
+        const apiUrl = window.location.origin;
+        const viewersCount = document.getElementById('viewersCount');
+        
+        function connectSSE() {
+            if (!username) {
+                viewersCount.textContent = '0';
+                return;
+            }
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'roomStats' && data.data.viewerCount !== undefined) {
+                        viewersCount.textContent = data.data.viewerCount.toLocaleString();
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+        
+        connectSSE();
+    </script>
+</body>
+</html>

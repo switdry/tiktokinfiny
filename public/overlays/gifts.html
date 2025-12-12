@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gifts Overlay</title>
+    <script>
+        // Redirigir al widget de gifts
+        const urlParams = new URLSearchParams(window.location.search);
+        window.location.href = `/widget/gifts/${urlParams.get('user') || ''}`;
+    </script>
+</head>
+<body>
+    Redirigiendo...
+</body>
+</html>

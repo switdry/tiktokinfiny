@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalos Recientes - TikTok Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: transparent;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .recent-gifts-container {
+            padding: 20px;
+            max-width: 400px;
+        }
+        
+        .recent-gift-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .recent-gift-icon {
+            font-size: 24px;
+        }
+        
+        .recent-gift-info {
+            flex: 1;
+        }
+        
+        .recent-gift-user {
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .recent-gift-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 2px;
+        }
+        
+        .recent-gift-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffd700;
+        }
+        
+        .no-gifts {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="recent-gifts-container" id="recentGiftsContainer">
+        <div class="no-gifts">Esperando regalos...</div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('user') || window.location.pathname.split('/').pop();
+        const apiUrl = window.location.origin;
+        const maxGifts = parseInt(urlParams.get('max') || '5');
+        
+        const recentGifts = [];
+        const container = document.getElementById('recentGiftsContainer');
+        
+        function getGiftEmoji(giftName) {
+            if (!giftName) return '🎁';
+            const name = giftName.toLowerCase();
+            if (name.includes('rosa') || name.includes('rose')) return '🌹';
+            if (name.includes('panda')) return '🐼';
+            if (name.includes('perfume')) return '💄';
+            if (name.includes('amor') || name.includes('love')) return '💕';
+            if (name.includes('confeti') || name.includes('confetti')) return '🎊';
+            if (name.includes('gafas') || name.includes('sunglasses')) return '🕶️';
+            if (name.includes('dinero') || name.includes('money')) return '💸';
+            if (name.includes('disco')) return '🪩';
+            if (name.includes('sirena') || name.includes('mermaid')) return '🧜‍♀️';
+            if (name.includes('avión') || name.includes('airplane')) return '✈️';
+            if (name.includes('planeta') || name.includes('planet')) return '🪐';
+            if (name.includes('diamante') || name.includes('diamond')) return '💎';
+            if (name.includes('león') || name.includes('lion')) return '🦁';
+            if (name.includes('universe')) return '🌌';
+            if (name.includes('corona') || name.includes('crown')) return '👑';
+            if (name.includes('fuego') || name.includes('fire')) return '🔥';
+            if (name.includes('estrella') || name.includes('star')) return '⭐';
+            if (name.includes('cake') || name.includes('pastel')) return '🎂';
+            if (name.includes('corazón') || name.includes('heart')) return '❤️';
+            return '🎁';
+        }
+        
+        function renderGifts() {
+            if (recentGifts.length === 0) {
+                container.innerHTML = '<div class="no-gifts">Esperando regalos...</div>';
+                return;
+            }
+            
+            container.innerHTML = recentGifts.slice(0, maxGifts).map(gift => {
+                const emoji = getGiftEmoji(gift.giftName);
+                const totalDiamonds = (gift.diamondCount || 0) * (gift.repeatCount || 1);
+                return `
+                    <div class="recent-gift-item">
+                        <div class="recent-gift-icon">${emoji}</div>
+                        <div class="recent-gift-info">
+                            <div class="recent-gift-user">@${escapeHtml(gift.user || 'Usuario')}</div>
+                            <div class="recent-gift-name">${escapeHtml(gift.giftName || 'Regalo')}${gift.repeatCount > 1 ? ` x${gift.repeatCount}` : ''}</div>
+                        </div>
+                        <div class="recent-gift-value">💎 ${totalDiamonds.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function addGift(gift) {
+            recentGifts.unshift(gift);
+            if (recentGifts.length > maxGifts) {
+                recentGifts.pop();
+            }
+            renderGifts();
+        }
+        
+        function connectSSE() {
+            if (!username) {
+                container.innerHTML = '<div class="no-gifts">Usuario no especificado</div>';
+                return;
+            }
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'gift') {
+                        addGift(data.data);
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+        
+        renderGifts();
+        connectSSE();
+    </script>
+</body>
+</html>
+

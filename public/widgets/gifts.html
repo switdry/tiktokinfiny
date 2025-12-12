@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Counter Widget - TikFinity</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            overflow: hidden;
+        }
+        
+        .widget-container {
+            padding: 20px;
+        }
+        
+        .gift-counter {
+            background: linear-gradient(135deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.95));
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.2);
+            max-width: 400px;
+        }
+        
+        .counter-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .counter-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .counter-title {
+            flex: 1;
+        }
+        
+        .counter-title h2 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .counter-title p {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+        
+        .progress-container {
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
+            height: 30px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ff6347);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+        
+        .diamonds {
+            color: #00bfff;
+            font-weight: 700;
+        }
+        
+        .recent-gifts {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+        
+        .recent-title {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .gift-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .gift-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fe2c55, #25f4ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .gift-info {
+            flex: 1;
+        }
+        
+        .gift-user {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .gift-name {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+        
+        .gift-count {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .gift-diamonds {
+            color: #00bfff;
+            font-size: 12px;
+        }
+        
+        .no-gifts {
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="gift-counter">
+            <div class="counter-header">
+                <div class="counter-icon">🎁</div>
+                <div class="counter-title">
+                    <h2 id="goalTitle">Meta de Regalos</h2>
+                    <p id="goalSubtitle">¡Ayúdame a llegar!</p>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                <div class="progress-text" id="progressText">0 / 100</div>
+            </div>
+            
+            <div class="stats-row">
+                <span>Total: <span id="totalGifts">0</span> regalos</span>
+                <span class="diamonds">💎 <span id="totalDiamonds">0</span></span>
+            </div>
+            
+            <div class="recent-gifts">
+                <div class="recent-title">Regalos Recientes</div>
+                <div id="giftList">
+                    <div class="no-gifts">Esperando regalos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = window.location.pathname.split('/').pop() || urlParams.get('user');
+        const goalTarget = parseInt(urlParams.get('target') || '100');
+        const goalType = urlParams.get('type') || 'gifts';
+        const apiUrl = window.location.origin;
+        
+        let totalGifts = 0;
+        let totalDiamonds = 0;
+        const recentGifts = [];
+        const maxRecentGifts = 5;
+        
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const totalGiftsEl = document.getElementById('totalGifts');
+        const totalDiamondsEl = document.getElementById('totalDiamonds');
+        const giftList = document.getElementById('giftList');
+        const goalTitle = document.getElementById('goalTitle');
+        
+        if (goalType === 'diamonds') {
+            goalTitle.textContent = 'Meta de Diamantes';
+        }
+        
+        function updateProgress() {
+            const current = goalType === 'diamonds' ? totalDiamonds : totalGifts;
+            const percent = Math.min((current / goalTarget) * 100, 100);
+            
+            progressBar.style.width = percent + '%';
+            progressText.textContent = `${current} / ${goalTarget}`;
+            totalGiftsEl.textContent = totalGifts;
+            totalDiamondsEl.textContent = totalDiamonds.toLocaleString();
+        }
+        
+        function addGift(gift) {
+            totalGifts += gift.repeatCount || 1;
+            totalDiamonds += (gift.diamondCount || 0) * (gift.repeatCount || 1);
+            
+            recentGifts.unshift(gift);
+            if (recentGifts.length > maxRecentGifts) {
+                recentGifts.pop();
+            }
+            
+            updateProgress();
+            renderGiftList();
+        }
+        
+        function renderGiftList() {
+            if (recentGifts.length === 0) {
+                giftList.innerHTML = '<div class="no-gifts">Esperando regalos...</div>';
+                return;
+            }
+            
+            giftList.innerHTML = recentGifts.map(gift => `
+                <div class="gift-item">
+                    <div class="gift-avatar">🎁</div>
+                    <div class="gift-info">
+                        <div class="gift-user">@${escapeHtml(gift.user)}</div>
+                        <div class="gift-name">${escapeHtml(gift.giftName)}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="gift-count">${gift.repeatCount}x</div>
+                        <div class="gift-diamonds">💎 ${gift.diamondCount * gift.repeatCount}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function connectSSE() {
+            if (!username) {
+                giftList.innerHTML = '<div class="no-gifts">Usuario no especificado</div>';
+                return;
+            }
+
+            const eventSource = new EventSource(`${apiUrl}/api/tiktok/events/${username}`);
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'gift') {
+                        addGift(data.data);
+                    }
+                } catch (e) {
+                    console.error('Error parsing event:', e);
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(connectSSE, 3000);
+            };
+        }
+        
+        updateProgress();
+        connectSSE();
+    </script>
+</body>
+</html>

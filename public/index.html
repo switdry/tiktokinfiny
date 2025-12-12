@@ -6,6 +6,7 @@
     <title>TikFinity Clone - TikTok LIVE Tools</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-widget-creator.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,28 +19,31 @@
         
         <nav class="sidebar-nav">
             <a href="#dashboard" class="nav-item active" data-section="dashboard">
-                <i class="fas fa-home"></i> Dashboard
+                <iconify-icon icon="mdi:view-dashboard" class="icon"></iconify-icon> Dashboard
             </a>
             <a href="#sound-alerts" class="nav-item" data-section="sound-alerts">
-                <i class="fas fa-volume-up"></i> Sound Alerts
+                <iconify-icon icon="mdi:volume-high" class="icon"></iconify-icon> Sound Alerts
             </a>
             <a href="#tts" class="nav-item" data-section="tts">
-                <i class="fas fa-microphone"></i> Text-to-Speech
+                <iconify-icon icon="mdi:microphone" class="icon"></iconify-icon> Text-to-Speech
             </a>
             <a href="#overlays" class="nav-item" data-section="overlays">
-                <i class="fas fa-layer-group"></i> Overlays
+                <iconify-icon icon="mdi:layers" class="icon"></iconify-icon> Overlays
+            </a>
+            <a href="#gifts" class="nav-item" data-section="gifts">
+                <iconify-icon icon="mdi:gift" class="icon"></iconify-icon> Regalos
             </a>
             <a href="#goals" class="nav-item" data-section="goals">
-                <i class="fas fa-bullseye"></i> Goals
+                <iconify-icon icon="mdi:target" class="icon"></iconify-icon> Goals
             </a>
             <a href="#chatbot" class="nav-item" data-section="chatbot">
-                <i class="fas fa-robot"></i> Chatbot
+                <iconify-icon icon="mdi:robot" class="icon"></iconify-icon> Chatbot
             </a>
             <a href="#music" class="nav-item" data-section="music">
-                <i class="fas fa-music"></i> Song Requests
+                <iconify-icon icon="mdi:music" class="icon"></iconify-icon> Song Requests
             </a>
             <a href="#actions" class="nav-item" data-section="actions">
-                <i class="fas fa-bolt"></i> Actions & Events
+                <iconify-icon icon="mdi:lightning-bolt" class="icon"></iconify-icon> Actions & Events
             </a>
         </nav>
         
@@ -218,34 +222,917 @@
 
         <!-- Overlays Section -->
         <section id="overlays" class="content-section">
+            <!-- Overlays Overview -->
             <div class="card">
-                <h3><i class="fas fa-layer-group"></i> Interactive Overlays</h3>
-                <p class="section-description">Agrega overlays interactivos a tu stream</p>
+                <h3><iconify-icon icon="mdi:layers" class="icon"></iconify-icon> Overlays Interactivos</h3>
+                <p class="section-description">Configura overlays profesionales para tu stream con personalización completa</p>
                 
-                <div class="overlays-grid">
-                    <div class="overlay-item">
-                        <h4>Chat Overlay</h4>
-                        <label>
+                <div class="overlays-stats">
+                    <div class="overlay-stat">
+                        <iconify-icon icon="mdi:check-circle" class="icon"></iconify-icon>
+                        <span id="activeOverlaysCount">0</span> Overlays Activos
+                    </div>
+                    <div class="overlay-stat">
+                        <iconify-icon icon="mdi:eye" class="icon"></iconify-icon>
+                        <span id="overlayViewsCount">0</span> Visualizaciones
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Overlay -->
+            <div class="card overlay-card">
+                <div class="overlay-card-header">
+                    <div class="overlay-card-title">
+                        <iconify-icon icon="mdi:chat" class="icon"></iconify-icon>
+                        <h3>Chat Overlay</h3>
+                    </div>
+                    <label class="widget-toggle">
                             <input type="checkbox" id="chatOverlayEnabled">
-                            Activar
+                        <span class="toggle-slider"></span>
                         </label>
-                        <div class="overlay-preview" id="chatOverlayPreview"></div>
+                </div>
+                
+                <div class="overlay-config-grid">
+                    <div class="overlay-preview-container">
+                        <div class="overlay-preview-label">Vista Previa</div>
+                        <div class="overlay-preview" id="chatOverlayPreview">
+                            <div class="overlay-preview-content chat-preview">
+                                <div class="chat-preview-item">
+                                    <span class="chat-preview-user">@usuario1</span>
+                                    <span class="chat-preview-text">¡Hola! 👋</span>
+                                </div>
+                                <div class="chat-preview-item">
+                                    <span class="chat-preview-user">@usuario2</span>
+                                    <span class="chat-preview-text">Genial stream!</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="overlay-item">
-                        <h4>Gift Overlay</h4>
-                        <label>
+                    
+                    <div class="overlay-settings">
+                        <div class="form-group">
+                            <label>Posición:</label>
+                            <select id="chatOverlayPosition" class="overlay-select">
+                                <option value="bottom-left">Abajo Izquierda</option>
+                                <option value="bottom-right">Abajo Derecha</option>
+                                <option value="top-left">Arriba Izquierda</option>
+                                <option value="top-right">Arriba Derecha</option>
+                                <option value="center">Centro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Máximo de mensajes: <span id="chatOverlayMaxMessages">10</span></label>
+                            <input type="range" id="chatOverlayMaxMessagesRange" min="3" max="20" value="10">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Duración (segundos): <span id="chatOverlayDuration">5</span></label>
+                            <input type="range" id="chatOverlayDurationRange" min="2" max="10" value="5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Estilo:</label>
+                            <select id="chatOverlayStyle" class="overlay-select">
+                                <option value="modern">Moderno</option>
+                                <option value="minimal">Minimalista</option>
+                                <option value="glass">Glassmorphism</option>
+                                <option value="neon">Neon</option>
+                            </select>
+                        </div>
+                        
+                        <div class="widget-url">
+                            <label>URL para OBS:</label>
+                            <div class="url-copy">
+                                <input type="text" id="chatOverlayUrl" readonly value="/overlays/chat.html">
+                                <button class="btn-icon copy-url" data-url="chatOverlayUrl">
+                                    <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift Overlay -->
+            <div class="card overlay-card">
+                <div class="overlay-card-header">
+                    <div class="overlay-card-title">
+                        <iconify-icon icon="mdi:gift" class="icon"></iconify-icon>
+                        <h3>Gift Overlay</h3>
+                    </div>
+                    <label class="widget-toggle">
                             <input type="checkbox" id="giftOverlayEnabled">
-                            Activar
-                        </label>
-                        <div class="overlay-preview" id="giftOverlayPreview"></div>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="overlay-config-grid">
+                    <div class="overlay-preview-container">
+                        <div class="overlay-preview-label">Vista Previa</div>
+                        <div class="overlay-preview" id="giftOverlayPreview">
+                            <div class="overlay-preview-content gift-preview">
+                                <div class="gift-preview-icon">🎁</div>
+                                <div class="gift-preview-text">
+                                    <div class="gift-preview-user">@donador</div>
+                                    <div class="gift-preview-name">Regalo Especial x3</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="overlay-item">
-                        <h4>Viewer Count</h4>
-                        <label>
-                            <input type="checkbox" id="viewerOverlayEnabled">
-                            Activar
+                    
+                    <div class="overlay-settings">
+                        <div class="form-group">
+                            <label>Posición:</label>
+                            <select id="giftOverlayPosition" class="overlay-select">
+                                <option value="top-center">Arriba Centro</option>
+                                <option value="top-left">Arriba Izquierda</option>
+                                <option value="top-right">Arriba Derecha</option>
+                                <option value="bottom-center">Abajo Centro</option>
+                                <option value="center">Centro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Animación:</label>
+                            <select id="giftOverlayAnimation" class="overlay-select">
+                                <option value="slide">Deslizar</option>
+                                <option value="fade">Desvanecer</option>
+                                <option value="bounce">Rebotar</option>
+                                <option value="scale">Escalar</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mostrar solo regalos mayores a:</label>
+                            <input type="number" id="giftOverlayMinDiamonds" placeholder="50" value="0" min="0">
+                        </div>
+                        
+                        <div class="widget-url">
+                            <label>URL para OBS:</label>
+                            <div class="url-copy">
+                                <input type="text" id="giftOverlayUrl" readonly value="/overlays/gifts.html">
+                                <button class="btn-icon copy-url" data-url="giftOverlayUrl">
+                                    <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Viewer Count Overlay -->
+            <div class="card overlay-card">
+                <div class="overlay-card-header">
+                    <div class="overlay-card-title">
+                        <iconify-icon icon="mdi:account-group" class="icon"></iconify-icon>
+                        <h3>Viewer Count Overlay</h3>
+                    </div>
+                    <label class="widget-toggle">
+                        <input type="checkbox" id="viewerOverlayEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="overlay-config-grid">
+                    <div class="overlay-preview-container">
+                        <div class="overlay-preview-label">Vista Previa</div>
+                        <div class="overlay-preview" id="viewerOverlayPreview">
+                            <div class="overlay-preview-content viewer-preview">
+                                <iconify-icon icon="mdi:eye" class="icon"></iconify-icon>
+                                <span class="viewer-preview-count">1,234</span>
+                                <span class="viewer-preview-label">Viewers</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-settings">
+                        <div class="form-group">
+                            <label>Posición:</label>
+                            <select id="viewerOverlayPosition" class="overlay-select">
+                                <option value="top-left">Arriba Izquierda</option>
+                                <option value="top-right">Arriba Derecha</option>
+                                <option value="bottom-left">Abajo Izquierda</option>
+                                <option value="bottom-right">Abajo Derecha</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Formato:</label>
+                            <select id="viewerOverlayFormat" class="overlay-select">
+                                <option value="full">Completo (1,234 Viewers)</option>
+                                <option value="compact">Compacto (1.2K)</option>
+                                <option value="number">Solo número (1,234)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Actualización (segundos): <span id="viewerOverlayUpdate">2</span></label>
+                            <input type="range" id="viewerOverlayUpdateRange" min="1" max="10" value="2">
+                        </div>
+                        
+                        <div class="widget-url">
+                            <label>URL para OBS:</label>
+                            <div class="url-copy">
+                                <input type="text" id="viewerOverlayUrl" readonly value="/overlays/viewers.html">
+                                <button class="btn-icon copy-url" data-url="viewerOverlayUrl">
+                                    <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Gifts Overlay -->
+            <div class="card overlay-card">
+                <div class="overlay-card-header">
+                    <div class="overlay-card-title">
+                        <iconify-icon icon="mdi:gift-open" class="icon"></iconify-icon>
+                        <h3>Recent Gifts Overlay</h3>
+                    </div>
+                    <label class="widget-toggle">
+                        <input type="checkbox" id="recentGiftsOverlayEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="overlay-config-grid">
+                    <div class="overlay-preview-container">
+                        <div class="overlay-preview-label">Vista Previa</div>
+                        <div class="overlay-preview" id="recentGiftsOverlayPreview">
+                            <div class="overlay-preview-content recent-gifts-preview">
+                                <div class="recent-gift-item">
+                                    <span class="recent-gift-icon">🎁</span>
+                                    <span class="recent-gift-user">@user1</span>
+                                </div>
+                                <div class="recent-gift-item">
+                                    <span class="recent-gift-icon">🌹</span>
+                                    <span class="recent-gift-user">@user2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-settings">
+                        <div class="form-group">
+                            <label>Máximo de regalos: <span id="recentGiftsOverlayMax">5</span></label>
+                            <input type="range" id="recentGiftsOverlayMaxRange" min="3" max="10" value="5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Posición:</label>
+                            <select id="recentGiftsOverlayPosition" class="overlay-select">
+                                <option value="left">Izquierda</option>
+                                <option value="right">Derecha</option>
+                            </select>
+                        </div>
+                        
+                        <div class="widget-url">
+                            <label>URL para OBS:</label>
+                            <div class="url-copy">
+                                <input type="text" id="recentGiftsOverlayUrl" readonly value="/overlays/recent-gifts.html">
+                                <button class="btn-icon copy-url" data-url="recentGiftsOverlayUrl">
+                                    <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overlay -->
+            <div class="card overlay-card">
+                <div class="overlay-card-header">
+                    <div class="overlay-card-title">
+                        <iconify-icon icon="mdi:chart-line" class="icon"></iconify-icon>
+                        <h3>Stats Overlay</h3>
+                    </div>
+                    <label class="widget-toggle">
+                        <input type="checkbox" id="statsOverlayEnabled">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="overlay-config-grid">
+                    <div class="overlay-preview-container">
+                        <div class="overlay-preview-label">Vista Previa</div>
+                        <div class="overlay-preview" id="statsOverlayPreview">
+                            <div class="overlay-preview-content stats-preview">
+                                <div class="stat-preview-item">
+                                    <iconify-icon icon="mdi:comment" class="icon"></iconify-icon>
+                                    <span>123</span>
+                                </div>
+                                <div class="stat-preview-item">
+                                    <iconify-icon icon="mdi:gift" class="icon"></iconify-icon>
+                                    <span>45</span>
+                                </div>
+                                <div class="stat-preview-item">
+                                    <iconify-icon icon="mdi:heart" class="icon"></iconify-icon>
+                                    <span>1.2K</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-settings">
+                        <div class="form-group">
+                            <label>Mostrar estadísticas:</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="statsShowComments" checked> Comentarios</label>
+                                <label><input type="checkbox" id="statsShowGifts" checked> Regalos</label>
+                                <label><input type="checkbox" id="statsShowLikes" checked> Likes</label>
+                                <label><input type="checkbox" id="statsShowViewers"> Viewers</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Posición:</label>
+                            <select id="statsOverlayPosition" class="overlay-select">
+                                <option value="top-left">Arriba Izquierda</option>
+                                <option value="top-right">Arriba Derecha</option>
+                                <option value="bottom-left">Abajo Izquierda</option>
+                                <option value="bottom-right">Abajo Derecha</option>
+                            </select>
+                        </div>
+                        
+                        <div class="widget-url">
+                            <label>URL para OBS:</label>
+                            <div class="url-copy">
+                                <input type="text" id="statsOverlayUrl" readonly value="/overlays/stats.html">
+                                <button class="btn-icon copy-url" data-url="statsOverlayUrl">
+                                    <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gifts Section -->
+        <section id="gifts" class="content-section">
+            <div class="gifts-container">
+                <!-- Stats Cards -->
+                <div class="gifts-stats-grid">
+                    <div class="gift-stat-card">
+                        <div class="gift-stat-icon">
+                            <iconify-icon icon="mdi:gift" class="icon"></iconify-icon>
+                        </div>
+                        <div class="gift-stat-info">
+                            <h3 id="totalGiftsCount">0</h3>
+                            <p>Total Regalos</p>
+                        </div>
+                    </div>
+                    <div class="gift-stat-card">
+                        <div class="gift-stat-icon diamond">
+                            <iconify-icon icon="mdi:diamond-stone" class="icon"></iconify-icon>
+                        </div>
+                        <div class="gift-stat-info">
+                            <h3 id="totalDiamondsCount">0</h3>
+                            <p>Diamantes</p>
+                        </div>
+                    </div>
+                    <div class="gift-stat-card">
+                        <div class="gift-stat-icon unique">
+                            <iconify-icon icon="mdi:account-group" class="icon"></iconify-icon>
+                        </div>
+                        <div class="gift-stat-info">
+                            <h3 id="uniqueGiftersCount">0</h3>
+                            <p>Donadores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Widgets Section -->
+                <div class="card">
+                    <h3><iconify-icon icon="mdi:widgets" class="icon"></iconify-icon> Widgets de Regalos</h3>
+                    <p class="section-description">Configura y personaliza los widgets para mostrar regalos en tu stream</p>
+                    
+                    <div class="widgets-grid">
+                        <!-- Widget 1: Recent Gifts -->
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4><iconify-icon icon="mdi:clock-outline" class="icon"></iconify-icon> Regalos Recientes</h4>
+                                <label class="widget-toggle">
+                                    <input type="checkbox" id="recentGiftsWidgetEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="widget-preview" id="recentGiftsPreview">
+                                <div class="widget-content">
+                                    <div class="gift-widget-item">
+                                        <div class="gift-widget-avatar">🎁</div>
+                                        <div class="gift-widget-info">
+                                            <div class="gift-widget-user">@usuario</div>
+                                            <div class="gift-widget-name">Regalo de Ejemplo</div>
+                                        </div>
+                                        <div class="gift-widget-value">💎 100</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget-url">
+                                <label>URL del Widget:</label>
+                                <div class="url-copy">
+                                    <input type="text" id="recentGiftsUrl" readonly value="/widgets/recent-gifts.html">
+                                    <button class="btn-icon copy-url" data-url="recentGiftsUrl">
+                                        <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Widget 2: Top Gifters -->
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4><iconify-icon icon="mdi:trophy" class="icon"></iconify-icon> Top Donadores</h4>
+                                <label class="widget-toggle">
+                                    <input type="checkbox" id="topGiftersWidgetEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="widget-preview" id="topGiftersPreview">
+                                <div class="widget-content">
+                                    <div class="gift-widget-item">
+                                        <div class="gift-widget-rank">1</div>
+                                        <div class="gift-widget-info">
+                                            <div class="gift-widget-user">@usuario1</div>
+                                            <div class="gift-widget-value">💎 500</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget-url">
+                                <label>URL del Widget:</label>
+                                <div class="url-copy">
+                                    <input type="text" id="topGiftersUrl" readonly value="/widgets/top-gifters.html">
+                                    <button class="btn-icon copy-url" data-url="topGiftersUrl">
+                                        <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Widget 3: Gift Goal -->
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4><iconify-icon icon="mdi:target" class="icon"></iconify-icon> Meta de Regalos</h4>
+                                <label class="widget-toggle">
+                                    <input type="checkbox" id="giftGoalWidgetEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="widget-preview" id="giftGoalPreview">
+                                <div class="widget-content">
+                                    <div class="goal-widget">
+                                        <div class="goal-widget-title">Meta de Regalos</div>
+                                        <div class="goal-widget-progress">
+                                            <div class="goal-widget-bar" style="width: 45%"></div>
+                                        </div>
+                                        <div class="goal-widget-stats">45 / 100</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget-url">
+                                <label>URL del Widget:</label>
+                                <div class="url-copy">
+                                    <input type="text" id="giftGoalUrl" readonly value="/widgets/gift-goal.html">
+                                    <button class="btn-icon copy-url" data-url="giftGoalUrl">
+                                        <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-config">
+                                <label>Meta:</label>
+                                <input type="number" id="giftGoalTarget" placeholder="100" value="100" min="1">
+                            </div>
+                        </div>
+
+                        <!-- Widget 4: Gift Alert -->
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4><iconify-icon icon="mdi:bell-ring" class="icon"></iconify-icon> Alertas de Regalos</h4>
+                                <label class="widget-toggle">
+                                    <input type="checkbox" id="giftAlertWidgetEnabled" checked>
+                                    <span class="toggle-slider"></span>
                         </label>
-                        <div class="overlay-preview" id="viewerOverlayPreview"></div>
+                            </div>
+                            <div class="widget-preview" id="giftAlertPreview">
+                                <div class="widget-content">
+                                    <div class="alert-widget">
+                                        <div class="alert-widget-icon">🎁</div>
+                                        <div class="alert-widget-text">
+                                            <div class="alert-widget-user">@usuario</div>
+                                            <div class="alert-widget-gift">envió Regalo Especial</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="widget-url">
+                                <label>URL del Widget:</label>
+                                <div class="url-copy">
+                                    <input type="text" id="giftAlertUrl" readonly value="/widgets/gift-alert.html">
+                                    <button class="btn-icon copy-url" data-url="giftAlertUrl">
+                                        <iconify-icon icon="mdi:content-copy" class="icon"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-config">
+                                <label>Mostrar solo regalos mayores a:</label>
+                                <input type="number" id="giftAlertMinDiamonds" placeholder="50" value="50" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Gifts List -->
+                <div class="card">
+                    <h3><iconify-icon icon="mdi:format-list-bulleted" class="icon"></iconify-icon> Regalos Recibidos</h3>
+                    <div class="gifts-list-container">
+                        <div id="giftsList" class="gifts-list">
+                            <p class="empty-state">Los regalos aparecerán aquí cuando te conectes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Widgets Creator -->
+            <div class="card widget-creator-card">
+                <div class="widget-creator-header">
+                    <div>
+                        <h3><iconify-icon icon="mdi:widgets" class="icon"></iconify-icon> Creador de Widgets Personalizados</h3>
+                        <p class="section-description">Diseña widgets únicos con total control sobre cada detalle</p>
+                    </div>
+                    <div class="widget-creator-badge">
+                        <iconify-icon icon="mdi:sparkles" class="icon"></iconify-icon>
+                        <span>Pro</span>
+                    </div>
+                </div>
+                
+                <div class="custom-widgets-container">
+                    <div class="custom-widgets-list" id="customWidgetsList">
+                        <div class="empty-state-widget">
+                            <iconify-icon icon="mdi:widgets-outline" class="icon-large"></iconify-icon>
+                            <p>No hay widgets personalizados</p>
+                            <small>Crea tu primer widget personalizado usando el formulario abajo</small>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-widget-creator">
+                        <div class="widget-creator-tabs">
+                            <button type="button" class="tab-btn active" data-tab="basic">
+                                <iconify-icon icon="mdi:information" class="icon"></iconify-icon>
+                                Básico
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="appearance">
+                                <iconify-icon icon="mdi:palette" class="icon"></iconify-icon>
+                                Apariencia
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="image">
+                                <iconify-icon icon="mdi:image" class="icon"></iconify-icon>
+                                Imagen
+                            </button>
+                            <button type="button" class="tab-btn" data-tab="trigger">
+                                <iconify-icon icon="mdi:lightning-bolt" class="icon"></iconify-icon>
+                                Activación
+                            </button>
+                        </div>
+                        
+                        <form id="customWidgetForm" enctype="multipart/form-data" class="widget-form">
+                            <!-- Tab Básico -->
+                            <div class="tab-content active" id="tab-basic">
+                            <div class="form-group">
+                                <label>Nombre del Widget:</label>
+                                <input type="text" id="widgetName" placeholder="Mi Widget Personalizado" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tipo de Widget:</label>
+                                <select id="widgetType" required>
+                                    <option value="gift-alert">Alerta de Regalo</option>
+                                    <option value="gift-list">Lista de Regalos</option>
+                                    <option value="stats">Estadísticas</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Imagen de Fondo (opcional):</label>
+                                <input type="file" id="widgetImage" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif">
+                                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">Formatos soportados: PNG, JPG, WEBP, GIF</small>
+                                <div class="image-preview" id="widgetImagePreview"></div>
+                            </div>
+                            
+                            <div class="form-group" id="imageSettingsGroup" style="display: none;">
+                                <label>Configuración de Imagen:</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Posición de la Imagen:</label>
+                                        <select id="widgetImagePosition">
+                                            <option value="center">Centro</option>
+                                            <option value="top">Arriba</option>
+                                            <option value="bottom">Abajo</option>
+                                            <option value="left">Izquierda</option>
+                                            <option value="right">Derecha</option>
+                                            <option value="top-left">Arriba Izquierda</option>
+                                            <option value="top-right">Arriba Derecha</option>
+                                            <option value="bottom-left">Abajo Izquierda</option>
+                                            <option value="bottom-right">Abajo Derecha</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tamaño de Imagen:</label>
+                                        <select id="widgetImageSize">
+                                            <option value="cover">Cubrir (Cover)</option>
+                                            <option value="contain">Contener (Contain)</option>
+                                            <option value="auto">Automático</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Opacidad de Imagen: <span id="widgetImageOpacityValue">100</span>%</label>
+                                        <input type="range" id="widgetImageOpacity" min="0" max="100" value="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Repetir Imagen:</label>
+                                        <select id="widgetImageRepeat">
+                                            <option value="no-repeat">No Repetir</option>
+                                            <option value="repeat">Repetir</option>
+                                            <option value="repeat-x">Repetir Horizontal</option>
+                                            <option value="repeat-y">Repetir Vertical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Color de Texto Principal:</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="widgetTextColor" value="#ffffff">
+                                    <input type="text" id="widgetTextColorHex" value="#ffffff" placeholder="#ffffff">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Color de Fondo:</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="widgetBgColor" value="#000000">
+                                    <input type="text" id="widgetBgColorHex" value="#000000" placeholder="#000000">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Color de Acento:</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="widgetAccentColor" value="#ff0050">
+                                    <input type="text" id="widgetAccentColorHex" value="#ff0050" placeholder="#ff0050">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tamaño de Fuente: <span id="widgetFontSizeValue">16</span>px</label>
+                                <input type="range" id="widgetFontSize" min="10" max="32" value="16">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Posición:</label>
+                                <select id="widgetPosition">
+                                    <option value="top-left">Arriba Izquierda</option>
+                                    <option value="top-right">Arriba Derecha</option>
+                                    <option value="bottom-left">Abajo Izquierda</option>
+                                    <option value="bottom-right">Abajo Derecha</option>
+                                    <option value="center">Centro</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Mensaje Personalizado:</label>
+                                <textarea id="widgetMessage" placeholder="¡Gracias por tu regalo! 🎁" rows="3"></textarea>
+                                <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.85em;">Este mensaje aparecerá cuando se active el widget</small>
+                            </div>
+                            
+                            </div>
+                            
+                            <!-- Tab Apariencia -->
+                            <div class="tab-content" id="tab-appearance">
+                                <div class="form-section">
+                                    <h5><iconify-icon icon="mdi:palette" class="icon"></iconify-icon> Colores y Estilo</h5>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>
+                                                <iconify-icon icon="mdi:format-color-text" class="icon"></iconify-icon>
+                                                Color de Texto
+                                            </label>
+                                            <div class="color-input-group">
+                                                <input type="color" id="widgetTextColor" value="#ffffff">
+                                                <input type="text" id="widgetTextColorHex" value="#ffffff" placeholder="#ffffff" pattern="^#[0-9A-F]{6}$">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>
+                                                <iconify-icon icon="mdi:format-color-fill" class="icon"></iconify-icon>
+                                                Color de Fondo
+                                            </label>
+                                            <div class="color-input-group">
+                                                <input type="color" id="widgetBgColor" value="#000000">
+                                                <input type="text" id="widgetBgColorHex" value="#000000" placeholder="#000000" pattern="^#[0-9A-F]{6}$">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>
+                                                <iconify-icon icon="mdi:palette-outline" class="icon"></iconify-icon>
+                                                Color de Acento
+                                            </label>
+                                            <div class="color-input-group">
+                                                <input type="color" id="widgetAccentColor" value="#ff0050">
+                                                <input type="text" id="widgetAccentColorHex" value="#ff0050" placeholder="#ff0050" pattern="^#[0-9A-F]{6}$">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <iconify-icon icon="mdi:format-size" class="icon"></iconify-icon>
+                                            Tamaño de Fuente: <span id="widgetFontSizeValue">16</span>px
+                                        </label>
+                                        <input type="range" id="widgetFontSize" min="10" max="48" value="16" step="1">
+                                        <div class="range-labels">
+                                            <span>10px</span>
+                                            <span>48px</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <iconify-icon icon="mdi:view-grid" class="icon"></iconify-icon>
+                                            Posición en Pantalla
+                                        </label>
+                                        <div class="position-grid">
+                                            <label class="position-option">
+                                                <input type="radio" name="widgetPosition" value="top-left" id="pos-tl">
+                                                <span>Arriba<br>Izquierda</span>
+                                            </label>
+                                            <label class="position-option">
+                                                <input type="radio" name="widgetPosition" value="top-right" id="pos-tr" checked>
+                                                <span>Arriba<br>Derecha</span>
+                                            </label>
+                                            <label class="position-option">
+                                                <input type="radio" name="widgetPosition" value="center" id="pos-c">
+                                                <span>Centro</span>
+                                            </label>
+                                            <label class="position-option">
+                                                <input type="radio" name="widgetPosition" value="bottom-left" id="pos-bl">
+                                                <span>Abajo<br>Izquierda</span>
+                                            </label>
+                                            <label class="position-option">
+                                                <input type="radio" name="widgetPosition" value="bottom-right" id="pos-br">
+                                                <span>Abajo<br>Derecha</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab Imagen -->
+                            <div class="tab-content" id="tab-image">
+                                <div class="form-section">
+                                    <h5><iconify-icon icon="mdi:image" class="icon"></iconify-icon> Imagen de Fondo</h5>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <iconify-icon icon="mdi:upload" class="icon"></iconify-icon>
+                                            Subir Imagen
+                                        </label>
+                                        <div class="file-upload-area" id="fileUploadArea">
+                                            <input type="file" id="widgetImage" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" hidden>
+                                            <div class="file-upload-content">
+                                                <iconify-icon icon="mdi:cloud-upload" class="icon-large"></iconify-icon>
+                                                <p>Haz clic para seleccionar o arrastra una imagen aquí</p>
+                                                <small>Formatos: PNG, JPG, WEBP, GIF (máx. 5MB)</small>
+                                            </div>
+                                        </div>
+                                        <div class="image-preview" id="widgetImagePreview"></div>
+                                    </div>
+                                    
+                                    <div class="form-group" id="imageSettingsGroup" style="display: none;">
+                                        <label>
+                                            <iconify-icon icon="mdi:cog" class="icon"></iconify-icon>
+                                            Configuración de Imagen
+                                        </label>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Posición</label>
+                                                <select id="widgetImagePosition">
+                                                    <option value="center">Centro</option>
+                                                    <option value="top">Arriba</option>
+                                                    <option value="bottom">Abajo</option>
+                                                    <option value="left">Izquierda</option>
+                                                    <option value="right">Derecha</option>
+                                                    <option value="top-left">Arriba Izquierda</option>
+                                                    <option value="top-right">Arriba Derecha</option>
+                                                    <option value="bottom-left">Abajo Izquierda</option>
+                                                    <option value="bottom-right">Abajo Derecha</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tamaño</label>
+                                                <select id="widgetImageSize">
+                                                    <option value="cover">Cubrir</option>
+                                                    <option value="contain">Contener</option>
+                                                    <option value="auto">Automático</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Opacidad: <span id="widgetImageOpacityValue">100</span>%</label>
+                                                <input type="range" id="widgetImageOpacity" min="0" max="100" value="100">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Repetición</label>
+                                                <select id="widgetImageRepeat">
+                                                    <option value="no-repeat">No Repetir</option>
+                                                    <option value="repeat">Repetir</option>
+                                                    <option value="repeat-x">Horizontal</option>
+                                                    <option value="repeat-y">Vertical</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab Activación -->
+                            <div class="tab-content" id="tab-trigger">
+                                <div class="form-section">
+                                    <h5><iconify-icon icon="mdi:lightning-bolt" class="icon"></iconify-icon> Activación y Mensaje</h5>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <iconify-icon icon="mdi:message-text" class="icon"></iconify-icon>
+                                            Mensaje Personalizado
+                                        </label>
+                                        <textarea id="widgetMessage" placeholder="¡Gracias {user} por la {gift}! 🎁" rows="4"></textarea>
+                                        <div class="message-variables">
+                                            <small>Variables disponibles:</small>
+                                            <div class="variable-tags">
+                                                <span class="variable-tag" data-var="{user}">{user}</span>
+                                                <span class="variable-tag" data-var="{gift}">{gift}</span>
+                                                <span class="variable-tag" data-var="{diamonds}">{diamonds}</span>
+                                                <span class="variable-tag" data-var="{count}">{count}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>
+                                            <iconify-icon icon="mdi:gift" class="icon"></iconify-icon>
+                                            Activar con Regalo Específico
+                                        </label>
+                                        <select id="widgetTriggerGift">
+                                            <option value="">Ninguno (siempre visible si está activado)</option>
+                                            <option value="rosa">🌹 Rosa</option>
+                                            <option value="panda">🐼 Panda</option>
+                                            <option value="perfume">💄 Perfume</option>
+                                            <option value="te amo">💕 Te Amo</option>
+                                            <option value="confeti">🎊 Confeti</option>
+                                            <option value="gafas de sol">🕶️ Gafas de Sol</option>
+                                            <option value="lluvia de dinero">💸 Lluvia de Dinero</option>
+                                            <option value="bola de disco">🪩 Bola de Disco</option>
+                                            <option value="sirena">🧜‍♀️ Sirena</option>
+                                            <option value="avión">✈️ Avión</option>
+                                            <option value="planeta">🪐 Planeta</option>
+                                            <option value="diamante">💎 Diamante</option>
+                                            <option value="león">🦁 León</option>
+                                            <option value="tiktok universe">🌌 TikTok Universe</option>
+                                        </select>
+                                        <small>El widget solo aparecerá cuando alguien done este regalo específico</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vista Previa -->
+                            <div class="widget-preview-section">
+                                <h5><iconify-icon icon="mdi:eye" class="icon"></iconify-icon> Vista Previa en Tiempo Real</h5>
+                                <div class="widget-preview-live" id="widgetPreviewLive"></div>
+                            </div>
+                            
+                            <!-- Botones de Acción -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="resetWidgetForm">
+                                    <iconify-icon icon="mdi:refresh" class="icon"></iconify-icon>
+                                    Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-large">
+                                    <iconify-icon icon="mdi:content-save" class="icon"></iconify-icon>
+                                    <span id="saveButtonText">Guardar Widget</span>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -254,29 +1141,56 @@
         <!-- Goals Section -->
         <section id="goals" class="content-section">
             <div class="card">
-                <h3><i class="fas fa-bullseye"></i> Goal Overlays</h3>
-                <p class="section-description">Crea metas para tu stream (followers, regalos, etc.)</p>
+                <h3><iconify-icon icon="mdi:target" class="icon"></iconify-icon> Metas del Stream</h3>
+                <p class="section-description">Crea y gestiona metas personalizadas para tu stream (diamantes, regalos, seguidores, likes, comentarios)</p>
                 
+                <div class="goals-container">
                 <div class="goals-list" id="goalsList">
-                    <div class="goal-item">
-                        <div class="goal-header">
-                            <input type="text" placeholder="Nombre de la meta" class="goal-name">
-                            <button class="btn-icon delete-goal"><i class="fas fa-trash"></i></button>
+                        <p class="empty-state" id="goalsEmptyState">No hay metas creadas. Crea una nueva meta abajo.</p>
+                    </div>
+                    
+                    <div class="goal-creator">
+                        <h4><iconify-icon icon="mdi:plus-circle" class="icon"></iconify-icon> Crear Nueva Meta</h4>
+                        <form id="goalForm" class="goal-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nombre de la Meta:</label>
+                                    <input type="text" id="goalNameInput" placeholder="Ej: Meta de Diamantes" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo de Meta:</label>
+                                    <select id="goalTypeInput" required>
+                                        <option value="diamonds">💎 Diamantes</option>
+                                        <option value="gifts">🎁 Regalos</option>
+                                        <option value="followers">👥 Seguidores</option>
+                                        <option value="likes">❤️ Likes</option>
+                                        <option value="comments">💬 Comentarios</option>
+                                    </select>
                         </div>
-                        <div class="goal-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
                             </div>
-                            <div class="goal-stats">
-                                <span class="current">0</span> / <span class="target">100</span>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Meta Objetivo:</label>
+                                    <input type="number" id="goalTargetInput" placeholder="1000" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Valor Inicial (opcional):</label>
+                                    <input type="number" id="goalCurrentInput" placeholder="0" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Color de la Barra:</label>
+                                <div class="color-input-group">
+                                    <input type="color" id="goalColorInput" value="#fe2c55">
+                                    <input type="text" id="goalColorText" value="#fe2c55" placeholder="#fe2c55">
                             </div>
                         </div>
-                        <input type="number" placeholder="Meta" class="goal-target" value="100">
+                            <button type="submit" class="btn btn-primary">
+                                <iconify-icon icon="mdi:check" class="icon"></iconify-icon> Crear Meta
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <button class="btn btn-secondary" id="addGoalBtn">
-                    <i class="fas fa-plus"></i> Agregar Meta
-                </button>
             </div>
         </section>
 
@@ -342,35 +1256,104 @@
 
         <!-- Actions & Events Section -->
         <section id="actions" class="content-section">
+            <div class="actions-container">
+                <!-- Actions Card -->
             <div class="card">
-                <h3><i class="fas fa-bolt"></i> Actions & Events</h3>
-                <p class="section-description">Configura acciones automáticas basadas en eventos</p>
+                    <h3><iconify-icon icon="mdi:lightning-bolt" class="icon"></iconify-icon> Acciones Automáticas</h3>
+                    <p class="section-description">Configura acciones automáticas que se ejecutarán cuando ocurran eventos específicos en tu stream</p>
                 
                 <div class="actions-list" id="actionsList">
-                    <div class="action-item">
-                        <div class="action-header">
-                            <select class="action-trigger">
-                                <option value="gift">Regalo Recibido</option>
-                                <option value="follow">Nuevo Follow</option>
-                                <option value="subscribe">Nuevo Subscribe</option>
-                                <option value="comment">Comentario Específico</option>
+                        <p class="empty-state" id="actionsEmptyState">No hay acciones configuradas. Crea una nueva acción abajo.</p>
+                    </div>
+                    
+                    <div class="action-creator">
+                        <h4><iconify-icon icon="mdi:plus-circle" class="icon"></iconify-icon> Crear Nueva Acción</h4>
+                        <form id="actionForm" class="action-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nombre de la Acción:</label>
+                                    <input type="text" id="actionNameInput" placeholder="Ej: Alerta de Regalo Especial" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Evento Trigger:</label>
+                                    <select id="actionTriggerInput" required>
+                                        <option value="">Selecciona un evento...</option>
+                                        <option value="gift">🎁 Regalo Recibido</option>
+                                        <option value="gift_specific">🎁 Regalo Específico</option>
+                                        <option value="gift_min_diamonds">💎 Regalo Mínimo de Diamantes</option>
+                                        <option value="follow">👥 Nuevo Seguidor</option>
+                                        <option value="comment">💬 Comentario Recibido</option>
+                                        <option value="comment_keyword">🔍 Comentario con Palabra Clave</option>
+                                        <option value="like">❤️ Like Recibido</option>
+                                        <option value="share">📤 Compartir</option>
+                                        <option value="viewer_goal">👀 Meta de Espectadores</option>
                             </select>
-                            <button class="btn-icon delete-action"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" id="triggerConfigGroup" style="display: none;">
+                                <label id="triggerConfigLabel">Configuración del Trigger:</label>
+                                <input type="text" id="triggerConfigInput" placeholder="Ej: nombre del regalo, palabra clave, etc.">
                         </div>
-                        <div class="action-config">
-                            <select class="action-type">
-                                <option value="sound">Reproducir Sonido</option>
-                                <option value="tts">Leer con TTS</option>
-                                <option value="overlay">Mostrar Overlay</option>
-                                <option value="command">Ejecutar Comando</option>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tipo de Acción:</label>
+                                    <select id="actionTypeInput" required>
+                                        <option value="sound">🔊 Reproducir Sonido</option>
+                                        <option value="tts">🎤 Leer con TTS</option>
+                                        <option value="overlay">🖼️ Mostrar Overlay</option>
+                                        <option value="command">⚡ Ejecutar Comando</option>
+                                        <option value="webhook">🌐 Enviar Webhook</option>
+                                        <option value="multiple">🔄 Múltiples Acciones</option>
                             </select>
-                            <input type="text" placeholder="Configuración" class="action-config-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Configuración:</label>
+                                    <input type="text" id="actionConfigInput" placeholder="Depende del tipo de acción">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="actionEnabledInput" checked>
+                                    Activar acción inmediatamente
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <iconify-icon icon="mdi:check" class="icon"></iconify-icon> Crear Acción
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Events Log Card -->
+                <div class="card">
+                    <h3><iconify-icon icon="mdi:history" class="icon"></iconify-icon> Log de Eventos</h3>
+                    <p class="section-description">Historial de eventos recientes y acciones ejecutadas</p>
+                    
+                    <div class="events-log-controls">
+                        <button class="btn btn-secondary" id="clearEventsBtn">
+                            <iconify-icon icon="mdi:delete-sweep" class="icon"></iconify-icon> Limpiar Log
+                        </button>
+                        <label class="widget-toggle">
+                            <input type="checkbox" id="autoScrollEvents" checked>
+                            <span class="toggle-slider"></span>
+                            <span>Auto-scroll</span>
+                        </label>
+                    </div>
+                    
+                    <div class="events-log" id="eventsLog">
+                        <div class="event-item info">
+                            <div class="event-icon">ℹ️</div>
+                            <div class="event-content">
+                                <div class="event-title">Sistema iniciado</div>
+                                <div class="event-time">Esperando eventos...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-secondary" id="addActionBtn">
-                    <i class="fas fa-plus"></i> Agregar Acción
-                </button>
             </div>
         </section>
     </div>
@@ -382,6 +1365,20 @@
         </div>
         <div class="overlay-window" id="giftOverlayWindow">
             <div class="overlay-content" id="giftOverlayContent"></div>
+        </div>
+        <!-- Rose Gift Widget -->
+        <div class="overlay-window" id="roseGiftOverlayWindow" style="display: none;">
+            <div class="rose-gift-widget" id="roseGiftWidget">
+                <div class="rose-gift-taco">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3081/3081981.png" alt="Taco" id="tacoImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="taco-emoji" style="display: none;">🌮</div>
+                </div>
+                <div class="rose-gift-content">
+                    <div class="rose-gift-label">¡Rosa Recibida!</div>
+                    <div class="rose-gift-user" id="roseGiftUser">@usuario</div>
+                    <div class="rose-gift-message">¡Gracias por tu regalo!</div>
+                </div>
+            </div>
         </div>
     </div>
 
