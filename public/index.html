@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikFinity Clone - TikTok LIVE Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fas fa-infinity"></i> TikFinity</h1>
+            <p class="subtitle">TikTok LIVE Tools</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="#sound-alerts" class="nav-item" data-section="sound-alerts">
+                <i class="fas fa-volume-up"></i> Sound Alerts
+            </a>
+            <a href="#tts" class="nav-item" data-section="tts">
+                <i class="fas fa-microphone"></i> Text-to-Speech
+            </a>
+            <a href="#overlays" class="nav-item" data-section="overlays">
+                <i class="fas fa-layer-group"></i> Overlays
+            </a>
+            <a href="#goals" class="nav-item" data-section="goals">
+                <i class="fas fa-bullseye"></i> Goals
+            </a>
+            <a href="#chatbot" class="nav-item" data-section="chatbot">
+                <i class="fas fa-robot"></i> Chatbot
+            </a>
+            <a href="#music" class="nav-item" data-section="music">
+                <i class="fas fa-music"></i> Song Requests
+            </a>
+            <a href="#actions" class="nav-item" data-section="actions">
+                <i class="fas fa-bolt"></i> Actions & Events
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span>Desconectado</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="topbar-title">
+                <h2 id="pageTitle">Dashboard</h2>
+            </div>
+            <div class="topbar-actions">
+                <input type="text" id="tiktokUsername" placeholder="@usuario" class="username-input">
+                <button id="connectBtn" class="btn btn-primary">
+                    <i class="fas fa-plug"></i> Conectar
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="viewerCount">0</h3>
+                        <p>Viewers</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                    <div class="stat-info">
+                        <h3 id="commentCount">0</h3>
+                        <p>Comentarios</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-gift"></i></div>
+                    <div class="stat-info">
+                        <h3 id="giftCount">0</h3>
+                        <p>Regalos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                    <div class="stat-info">
+                        <h3 id="likeCount">0</h3>
+                        <p>Likes</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="card">
+                    <h3><i class="fas fa-comment-dots"></i> Chat en Tiempo Real</h3>
+                    <div id="liveChat" class="live-chat">
+                        <p class="empty-state">Los comentarios aparecerán aquí cuando te conectes...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sound Alerts Section -->
+        <section id="sound-alerts" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-volume-up"></i> Sound Alerts</h3>
+                <p class="section-description">Reproduce sonidos cuando recibes regalos o eventos especiales</p>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="soundAlertsEnabled" checked>
+                        Activar Sound Alerts
+                    </label>
+                </div>
+
+                <div class="alerts-list" id="alertsList">
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span><i class="fas fa-gift"></i> Regalo Recibido</span>
+                            <button class="btn-icon test-alert" data-alert="gift">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                        <input type="file" accept="audio/*" class="file-input" data-alert="gift">
+                        <input type="text" placeholder="URL del audio (opcional)" class="url-input" data-alert="gift">
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span><i class="fas fa-star"></i> Follow</span>
+                            <button class="btn-icon test-alert" data-alert="follow">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                        <input type="file" accept="audio/*" class="file-input" data-alert="follow">
+                        <input type="text" placeholder="URL del audio (opcional)" class="url-input" data-alert="follow">
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span><i class="fas fa-crown"></i> Subscribe</span>
+                            <button class="btn-icon test-alert" data-alert="subscribe">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                        <input type="file" accept="audio/*" class="file-input" data-alert="subscribe">
+                        <input type="text" placeholder="URL del audio (opcional)" class="url-input" data-alert="subscribe">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TTS Section -->
+        <section id="tts" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-microphone"></i> Text-to-Speech</h3>
+                <p class="section-description">Lee comentarios automáticamente con voz sintética</p>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="ttsEnabled" checked>
+                        Activar Text-to-Speech
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="useRemoteTTS">
+                        Usar voces remotas (mejor calidad)
+                    </label>
+                </div>
+
+                <div class="form-group" id="localVoiceContainer">
+                    <label>Voz Local:</label>
+                    <select id="voiceSelect"></select>
+                </div>
+
+                <div class="form-group hidden" id="remoteVoiceContainer">
+                    <label>Voz Remota:</label>
+                    <select id="remoteVoiceSelect"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Velocidad: <span id="speedValue">1.0</span>x</label>
+                    <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1.0">
+                </div>
+
+                <div class="form-group">
+                    <label>Volumen: <span id="volumeValue">100</span>%</label>
+                    <input type="range" id="volumeRange" min="0" max="100" step="5" value="100">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="filterMentions" checked>
+                        Solo leer menciones (@)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="readUsername">
+                        Incluir nombre de usuario al leer
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overlays Section -->
+        <section id="overlays" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-layer-group"></i> Interactive Overlays</h3>
+                <p class="section-description">Agrega overlays interactivos a tu stream</p>
+                
+                <div class="overlays-grid">
+                    <div class="overlay-item">
+                        <h4>Chat Overlay</h4>
+                        <label>
+                            <input type="checkbox" id="chatOverlayEnabled">
+                            Activar
+                        </label>
+                        <div class="overlay-preview" id="chatOverlayPreview"></div>
+                    </div>
+                    <div class="overlay-item">
+                        <h4>Gift Overlay</h4>
+                        <label>
+                            <input type="checkbox" id="giftOverlayEnabled">
+                            Activar
+                        </label>
+                        <div class="overlay-preview" id="giftOverlayPreview"></div>
+                    </div>
+                    <div class="overlay-item">
+                        <h4>Viewer Count</h4>
+                        <label>
+                            <input type="checkbox" id="viewerOverlayEnabled">
+                            Activar
+                        </label>
+                        <div class="overlay-preview" id="viewerOverlayPreview"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Goals Section -->
+        <section id="goals" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-bullseye"></i> Goal Overlays</h3>
+                <p class="section-description">Crea metas para tu stream (followers, regalos, etc.)</p>
+                
+                <div class="goals-list" id="goalsList">
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <input type="text" placeholder="Nombre de la meta" class="goal-name">
+                            <button class="btn-icon delete-goal"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="goal-stats">
+                                <span class="current">0</span> / <span class="target">100</span>
+                            </div>
+                        </div>
+                        <input type="number" placeholder="Meta" class="goal-target" value="100">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="addGoalBtn">
+                    <i class="fas fa-plus"></i> Agregar Meta
+                </button>
+            </div>
+        </section>
+
+        <!-- Chatbot Section -->
+        <section id="chatbot" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-robot"></i> Chatbot</h3>
+                <p class="section-description">Configura respuestas automáticas para tu chat</p>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="chatbotEnabled">
+                        Activar Chatbot
+                    </label>
+                </div>
+
+                <div class="chatbot-rules" id="chatbotRules">
+                    <div class="rule-item">
+                        <input type="text" placeholder="Palabra clave" class="rule-keyword">
+                        <input type="text" placeholder="Respuesta" class="rule-response">
+                        <button class="btn-icon delete-rule"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="addRuleBtn">
+                    <i class="fas fa-plus"></i> Agregar Regla
+                </button>
+            </div>
+        </section>
+
+        <!-- Music Section -->
+        <section id="music" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-music"></i> Song Requests (Spotify)</h3>
+                <p class="section-description">Permite que tus viewers soliciten canciones de Spotify</p>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="musicEnabled">
+                        Activar Song Requests
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Spotify Client ID:</label>
+                    <input type="text" id="spotifyClientId" placeholder="Tu Client ID">
+                </div>
+
+                <div class="form-group">
+                    <label>Spotify Client Secret:</label>
+                    <input type="password" id="spotifyClientSecret" placeholder="Tu Client Secret">
+                </div>
+
+                <button class="btn btn-primary" id="connectSpotifyBtn">
+                    <i class="fab fa-spotify"></i> Conectar Spotify
+                </button>
+
+                <div class="queue-list" id="musicQueue">
+                    <h4>Cola de Canciones</h4>
+                    <div class="queue-empty">No hay canciones en cola</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions & Events Section -->
+        <section id="actions" class="content-section">
+            <div class="card">
+                <h3><i class="fas fa-bolt"></i> Actions & Events</h3>
+                <p class="section-description">Configura acciones automáticas basadas en eventos</p>
+                
+                <div class="actions-list" id="actionsList">
+                    <div class="action-item">
+                        <div class="action-header">
+                            <select class="action-trigger">
+                                <option value="gift">Regalo Recibido</option>
+                                <option value="follow">Nuevo Follow</option>
+                                <option value="subscribe">Nuevo Subscribe</option>
+                                <option value="comment">Comentario Específico</option>
+                            </select>
+                            <button class="btn-icon delete-action"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="action-config">
+                            <select class="action-type">
+                                <option value="sound">Reproducir Sonido</option>
+                                <option value="tts">Leer con TTS</option>
+                                <option value="overlay">Mostrar Overlay</option>
+                                <option value="command">Ejecutar Comando</option>
+                            </select>
+                            <input type="text" placeholder="Configuración" class="action-config-input">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="addActionBtn">
+                    <i class="fas fa-plus"></i> Agregar Acción
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Overlay Windows (for OBS) -->
+    <div class="overlay-windows">
+        <div class="overlay-window" id="chatOverlayWindow">
+            <div class="overlay-content" id="chatOverlayContent"></div>
+        </div>
+        <div class="overlay-window" id="giftOverlayWindow">
+            <div class="overlay-content" id="giftOverlayContent"></div>
+        </div>
+    </div>
+
+    <script src="/tikfinity.js"></script>
+</body>
+</html>
