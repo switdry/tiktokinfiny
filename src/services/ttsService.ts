@@ -71,14 +71,41 @@ export class TTSService {
         }
     }
 
+    private normalizeLanguageCode(voiceId: string): string {
+        const langMap: Record<string, string> = {
+            'Brian': 'en', 'Amy': 'en', 'Emma': 'en', 'Joanna': 'en', 'Joey': 'en', 'Matthew': 'en',
+            'Conchita': 'es', 'Enrique': 'es', 'Lucia': 'es', 'Mia': 'es', 'Miguel': 'es', 'Penelope': 'es', 'Lupe': 'es',
+            'Camila': 'pt', 'Vitoria': 'pt', 'Ricardo': 'pt',
+            'Celine': 'fr', 'Mathieu': 'fr',
+            'Hans': 'de', 'Marlene': 'de', 'Vicki': 'de',
+            'Giorgio': 'it', 'Carla': 'it', 'Bianca': 'it',
+            'Takumi': 'ja', 'Mizuki': 'ja',
+            'Seoyeon': 'ko', 'Zhiyu': 'zh-CN',
+            'Filiz': 'tr', 'Astrid': 'sv', 'Tatyana': 'ru', 'Maxim': 'ru',
+            'Ewa': 'pl', 'Maja': 'pl', 'Jan': 'pl', 'Liv': 'nb', 'Lotte': 'nl', 'Ruben': 'nl'
+        };
+        
+        if (langMap[voiceId]) {
+            return langMap[voiceId];
+        }
+        
+        const validLangs = ['es', 'en', 'pt', 'fr', 'de', 'it', 'ja', 'ko', 'zh-CN', 'ru', 'ar', 'hi', 'tr', 'pl', 'nl', 'es-MX', 'es-ES', 'en-US', 'en-GB', 'pt-BR'];
+        if (validLangs.includes(voiceId)) {
+            return voiceId;
+        }
+        
+        return 'es';
+    }
+
     private async generateGoogleTTS(text: string, lang: string, cacheKey: string): Promise<string> {
         const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
+        const normalizedLang = this.normalizeLanguageCode(lang);
         
         const textChunks = this.splitTextIntoChunks(text, 200);
         const audioBuffers: Buffer[] = [];
 
         for (const chunk of textChunks) {
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${lang}&client=tw-ob`;
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${normalizedLang}&client=tw-ob`;
             
             try {
                 const response = await axios.get(url, { 
