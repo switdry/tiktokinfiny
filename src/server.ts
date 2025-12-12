@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
-import { WebcastPushConnection } from 'tiktok-live-connector';
+const { TikTokLiveConnection, WebcastEvent } = require('tiktok-live-connector');
 import { Comment, Gift, StreamEvent, RoomStats } from './types';
 import { TTSService } from './services/ttsService';
 
@@ -16,7 +16,7 @@ app.use('/cache', express.static('cache'));
 app.use('/widgets', express.static('public/widgets'));
 
 interface ActiveConnection {
-    connection: WebcastPushConnection;
+    connection: any;
     comments: Comment[];
     gifts: Gift[];
     sseClients: Set<Response>;
@@ -92,16 +92,14 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
 
     console.log(`\n🔗 [${new Date().toISOString()}] Conectando con @${username}...`);
 
-    let tiktokConnection: WebcastPushConnection | null = null;
+    let tiktokConnection: any = null;
     const comments: Comment[] = [];
     const gifts: Gift[] = [];
     const maxItems = 100;
     const roomStats: RoomStats = { viewerCount: 0, likeCount: 0, totalViewerCount: 0 };
 
     try {
-        tiktokConnection = new WebcastPushConnection(username, {
-            enableExtendedGiftInfo: true,
-        });
+        tiktokConnection = new TikTokLiveConnection(username);
 
         const connData: ActiveConnection = {
             connection: tiktokConnection,
@@ -113,13 +111,13 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
         };
         activeConnections.set(username, connData);
 
-        tiktokConnection.on('chat', (data: any) => {
+        tiktokConnection.on(WebcastEvent.CHAT, (data: any) => {
             try {
                 const comment: Comment = {
-                    user: data.uniqueId || data.nickname || 'Usuario',
+                    user: data.user?.uniqueId || data.uniqueId || data.nickname || 'Usuario',
                     text: data.comment || data.text || '',
                     timestamp: Date.now(),
-                    profilePicUrl: data.profilePictureUrl,
+                    profilePicUrl: data.user?.profilePicture?.urls?.[0] || data.profilePictureUrl,
                     raw: data,
                 };
 
@@ -140,20 +138,20 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             }
         });
 
-        tiktokConnection.on('gift', (data: any) => {
+        tiktokConnection.on(WebcastEvent.GIFT, (data: any) => {
             try {
                 const gift: Gift = {
-                    id: `${data.uniqueId}-${data.giftId}-${Date.now()}`,
-                    user: data.uniqueId || data.nickname || 'Usuario',
-                    giftName: data.giftName || 'Regalo',
+                    id: `${data.user?.uniqueId || data.uniqueId}-${data.giftId}-${Date.now()}`,
+                    user: data.user?.uniqueId || data.uniqueId || data.nickname || 'Usuario',
+                    giftName: data.giftName || data.gift?.name || 'Regalo',
                     giftId: data.giftId,
                     repeatCount: data.repeatCount || 1,
-                    diamondCount: data.diamondCount || 0,
+                    diamondCount: data.diamondCount || data.gift?.diamondCount || 0,
                     timestamp: Date.now(),
-                    profilePicUrl: data.profilePictureUrl,
+                    profilePicUrl: data.user?.profilePicture?.urls?.[0] || data.profilePictureUrl,
                 };
 
-                if (data.repeatEnd || data.giftType === 1) {
+                if (data.repeatEnd || data.giftType === 1 || !data.repeatEnd) {
                     gifts.push(gift);
                     if (gifts.length > maxItems) gifts.shift();
                     
@@ -170,14 +168,14 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             }
         });
 
-        tiktokConnection.on('like', (data: any) => {
+        tiktokConnection.on(WebcastEvent.LIKE, (data: any) => {
             try {
                 connData.roomStats.likeCount = data.totalLikeCount || connData.roomStats.likeCount;
                 
                 broadcastEvent(username, {
                     type: 'like',
                     data: {
-                        user: data.uniqueId || 'Usuario',
+                        user: data.user?.uniqueId || data.uniqueId || 'Usuario',
                         likeCount: data.likeCount || 1,
                         totalLikeCount: data.totalLikeCount || 0,
                         timestamp: Date.now()
@@ -189,29 +187,29 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             }
         });
 
-        tiktokConnection.on('follow', (data: any) => {
+        tiktokConnection.on(WebcastEvent.FOLLOW, (data: any) => {
             try {
                 broadcastEvent(username, {
                     type: 'follow',
                     data: {
-                        user: data.uniqueId || data.nickname || 'Usuario',
+                        user: data.user?.uniqueId || data.uniqueId || data.nickname || 'Usuario',
                         timestamp: Date.now(),
-                        profilePicUrl: data.profilePictureUrl
+                        profilePicUrl: data.user?.profilePicture?.urls?.[0] || data.profilePictureUrl
                     },
                     timestamp: Date.now()
                 });
-                console.log(`👤 [${username}] Nuevo seguidor: @${data.uniqueId}`);
+                console.log(`👤 [${username}] Nuevo seguidor: @${data.user?.uniqueId || data.uniqueId}`);
             } catch (e) {
                 console.error(`Error procesando follow:`, e);
             }
         });
 
-        tiktokConnection.on('share', (data: any) => {
+        tiktokConnection.on(WebcastEvent.SHARE, (data: any) => {
             try {
                 broadcastEvent(username, {
                     type: 'share',
                     data: {
-                        user: data.uniqueId || 'Usuario',
+                        user: data.user?.uniqueId || data.uniqueId || 'Usuario',
                         timestamp: Date.now()
                     },
                     timestamp: Date.now()
@@ -221,7 +219,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             }
         });
 
-        tiktokConnection.on('roomUser', (data: any) => {
+        tiktokConnection.on(WebcastEvent.ROOM_USER, (data: any) => {
             try {
                 connData.roomStats.viewerCount = data.viewerCount || 0;
                 connData.roomStats.totalViewerCount = data.topViewers?.length || 0;
@@ -236,7 +234,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             }
         });
 
-        tiktokConnection.on('connected', (state: any) => {
+        tiktokConnection.on(WebcastEvent.CONNECTED, (state: any) => {
             console.log(`✅ [${username}] Conectado! Room ID: ${state?.roomId}`);
             connData.isConnected = true;
             connData.roomStats.viewerCount = state?.viewerCount || 0;
@@ -248,7 +246,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             });
         });
 
-        tiktokConnection.on('streamEnd', () => {
+        tiktokConnection.on(WebcastEvent.STREAM_END, () => {
             console.log(`📺 [${username}] Stream terminado`);
             connData.isConnected = false;
             broadcastEvent(username, {
@@ -258,7 +256,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             });
         });
 
-        tiktokConnection.on('disconnected', () => {
+        tiktokConnection.on(WebcastEvent.DISCONNECTED, () => {
             console.log(`🔌 [${username}] Desconectado`);
             connData.isConnected = false;
             broadcastEvent(username, {
@@ -268,7 +266,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
             });
         });
 
-        tiktokConnection.on('error', (err: unknown) => {
+        tiktokConnection.on(WebcastEvent.ERROR, (err: unknown) => {
             let errorMsg = 'Unknown error';
             try {
                 if (err instanceof Error) {
@@ -307,13 +305,16 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
         try {
             if (error instanceof Error) {
                 errorStr = error.message;
+                console.error(`❌ [${username}] Error completo:`, error.stack || error);
             } else if (typeof error === 'object' && error !== null) {
-                errorStr = JSON.stringify(error);
+                errorStr = JSON.stringify(error, null, 2);
+                console.error(`❌ [${username}] Error objeto:`, error);
             } else {
                 errorStr = String(error);
             }
         } catch (e) {
             errorStr = 'Error parsing error';
+            console.error(`❌ [${username}] Error original:`, error);
         }
         
         console.error(`❌ [${username}] Error al conectar:`, errorStr);

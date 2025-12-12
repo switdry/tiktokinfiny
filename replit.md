@@ -62,8 +62,8 @@ npm start      # Production build and run
 - `/widget/goals/:username?type=diamonds&target=1000` - Goal progress bar
 
 ## Key Features
-- Connects to TikTok LIVE streams using tiktok-live-connector
-- 35+ TTS voices via StreamElements API (free, no API key needed)
+- Connects to TikTok LIVE streams using tiktok-live-connector v2.x
+- 20+ TTS voices via Google Translate API (free, no API key needed)
 - Audio caching for improved performance
 - Real-time SSE for instant updates
 - Multiple widget types for OBS integration
@@ -71,8 +71,12 @@ npm start      # Production build and run
 - Follower and like tracking
 
 ## Recent Changes
+- 2025-12-12: Updated TikTok connector and TTS
+  - Updated tiktok-live-connector to v2.1.0 with WebcastEvent API
+  - Switched TTS from StreamElements to Google Translate (free, no auth)
+  - Fixed connection error handling to prevent server crashes
+  - Improved event handling with new library structure
 - 2024-12-12: Complete system overhaul
-  - Added StreamElements TTS with 35+ voices
   - Created embeddable widgets for OBS (chat, alerts, goals)
   - Improved real-time event streaming with SSE
   - Added gift and follow tracking

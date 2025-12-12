@@ -22,44 +22,26 @@ export class TTSService {
 
     private initializeVoices(): void {
         this.voices = [
-            { id: 'Brian', name: 'Brian (Inglés)', language: 'en-GB', gender: 'male', provider: 'streamelements' },
-            { id: 'Amy', name: 'Amy (Inglés)', language: 'en-GB', gender: 'female', provider: 'streamelements' },
-            { id: 'Emma', name: 'Emma (Inglés)', language: 'en-GB', gender: 'female', provider: 'streamelements' },
-            { id: 'Joanna', name: 'Joanna (Inglés US)', language: 'en-US', gender: 'female', provider: 'streamelements' },
-            { id: 'Joey', name: 'Joey (Inglés US)', language: 'en-US', gender: 'male', provider: 'streamelements' },
-            { id: 'Matthew', name: 'Matthew (Inglés US)', language: 'en-US', gender: 'male', provider: 'streamelements' },
-            { id: 'Conchita', name: 'Conchita (Español España)', language: 'es-ES', gender: 'female', provider: 'streamelements' },
-            { id: 'Enrique', name: 'Enrique (Español España)', language: 'es-ES', gender: 'male', provider: 'streamelements' },
-            { id: 'Lucia', name: 'Lucia (Español España)', language: 'es-ES', gender: 'female', provider: 'streamelements' },
-            { id: 'Mia', name: 'Mia (Español México)', language: 'es-MX', gender: 'female', provider: 'streamelements' },
-            { id: 'Miguel', name: 'Miguel (Español US)', language: 'es-US', gender: 'male', provider: 'streamelements' },
-            { id: 'Penelope', name: 'Penelope (Español US)', language: 'es-US', gender: 'female', provider: 'streamelements' },
-            { id: 'Lupe', name: 'Lupe (Español US)', language: 'es-US', gender: 'female', provider: 'streamelements' },
-            { id: 'Camila', name: 'Camila (Portugués Brasil)', language: 'pt-BR', gender: 'female', provider: 'streamelements' },
-            { id: 'Vitoria', name: 'Vitoria (Portugués Brasil)', language: 'pt-BR', gender: 'female', provider: 'streamelements' },
-            { id: 'Ricardo', name: 'Ricardo (Portugués Brasil)', language: 'pt-BR', gender: 'male', provider: 'streamelements' },
-            { id: 'Celine', name: 'Celine (Francés)', language: 'fr-FR', gender: 'female', provider: 'streamelements' },
-            { id: 'Mathieu', name: 'Mathieu (Francés)', language: 'fr-FR', gender: 'male', provider: 'streamelements' },
-            { id: 'Hans', name: 'Hans (Alemán)', language: 'de-DE', gender: 'male', provider: 'streamelements' },
-            { id: 'Marlene', name: 'Marlene (Alemán)', language: 'de-DE', gender: 'female', provider: 'streamelements' },
-            { id: 'Vicki', name: 'Vicki (Alemán)', language: 'de-DE', gender: 'female', provider: 'streamelements' },
-            { id: 'Giorgio', name: 'Giorgio (Italiano)', language: 'it-IT', gender: 'male', provider: 'streamelements' },
-            { id: 'Carla', name: 'Carla (Italiano)', language: 'it-IT', gender: 'female', provider: 'streamelements' },
-            { id: 'Bianca', name: 'Bianca (Italiano)', language: 'it-IT', gender: 'female', provider: 'streamelements' },
-            { id: 'Takumi', name: 'Takumi (Japonés)', language: 'ja-JP', gender: 'male', provider: 'streamelements' },
-            { id: 'Mizuki', name: 'Mizuki (Japonés)', language: 'ja-JP', gender: 'female', provider: 'streamelements' },
-            { id: 'Seoyeon', name: 'Seoyeon (Coreano)', language: 'ko-KR', gender: 'female', provider: 'streamelements' },
-            { id: 'Zhiyu', name: 'Zhiyu (Chino)', language: 'zh-CN', gender: 'female', provider: 'streamelements' },
-            { id: 'Filiz', name: 'Filiz (Turco)', language: 'tr-TR', gender: 'female', provider: 'streamelements' },
-            { id: 'Astrid', name: 'Astrid (Sueco)', language: 'sv-SE', gender: 'female', provider: 'streamelements' },
-            { id: 'Tatyana', name: 'Tatyana (Ruso)', language: 'ru-RU', gender: 'female', provider: 'streamelements' },
-            { id: 'Maxim', name: 'Maxim (Ruso)', language: 'ru-RU', gender: 'male', provider: 'streamelements' },
-            { id: 'Ewa', name: 'Ewa (Polaco)', language: 'pl-PL', gender: 'female', provider: 'streamelements' },
-            { id: 'Maja', name: 'Maja (Polaco)', language: 'pl-PL', gender: 'female', provider: 'streamelements' },
-            { id: 'Jan', name: 'Jan (Polaco)', language: 'pl-PL', gender: 'male', provider: 'streamelements' },
-            { id: 'Liv', name: 'Liv (Noruego)', language: 'nb-NO', gender: 'female', provider: 'streamelements' },
-            { id: 'Lotte', name: 'Lotte (Holandés)', language: 'nl-NL', gender: 'female', provider: 'streamelements' },
-            { id: 'Ruben', name: 'Ruben (Holandés)', language: 'nl-NL', gender: 'male', provider: 'streamelements' },
+            { id: 'es', name: 'Español', language: 'es', gender: 'female', provider: 'google' },
+            { id: 'es-MX', name: 'Español México', language: 'es-MX', gender: 'female', provider: 'google' },
+            { id: 'es-ES', name: 'Español España', language: 'es-ES', gender: 'female', provider: 'google' },
+            { id: 'en', name: 'English', language: 'en', gender: 'female', provider: 'google' },
+            { id: 'en-US', name: 'English US', language: 'en-US', gender: 'female', provider: 'google' },
+            { id: 'en-GB', name: 'English UK', language: 'en-GB', gender: 'female', provider: 'google' },
+            { id: 'pt', name: 'Português', language: 'pt', gender: 'female', provider: 'google' },
+            { id: 'pt-BR', name: 'Português Brasil', language: 'pt-BR', gender: 'female', provider: 'google' },
+            { id: 'fr', name: 'Français', language: 'fr', gender: 'female', provider: 'google' },
+            { id: 'de', name: 'Deutsch', language: 'de', gender: 'female', provider: 'google' },
+            { id: 'it', name: 'Italiano', language: 'it', gender: 'female', provider: 'google' },
+            { id: 'ja', name: '日本語', language: 'ja', gender: 'female', provider: 'google' },
+            { id: 'ko', name: '한국어', language: 'ko', gender: 'female', provider: 'google' },
+            { id: 'zh-CN', name: '中文', language: 'zh-CN', gender: 'female', provider: 'google' },
+            { id: 'ru', name: 'Русский', language: 'ru', gender: 'female', provider: 'google' },
+            { id: 'ar', name: 'العربية', language: 'ar', gender: 'female', provider: 'google' },
+            { id: 'hi', name: 'हिन्दी', language: 'hi', gender: 'female', provider: 'google' },
+            { id: 'tr', name: 'Türkçe', language: 'tr', gender: 'female', provider: 'google' },
+            { id: 'pl', name: 'Polski', language: 'pl', gender: 'female', provider: 'google' },
+            { id: 'nl', name: 'Nederlands', language: 'nl', gender: 'female', provider: 'google' },
         ];
     }
 
@@ -70,7 +52,7 @@ export class TTSService {
     async generateSpeech(
         text: string,
         voiceId: string,
-        _provider: string = 'streamelements',
+        _provider: string = 'google',
         options: { speed?: number; volume?: number } = {}
     ): Promise<string> {
         const cacheKey = this.getCacheKey(text, voiceId, options);
@@ -81,7 +63,7 @@ export class TTSService {
         }
 
         try {
-            const audioUrl = await this.generateStreamElementsTTS(text, voiceId);
+            const audioUrl = await this.generateGoogleTTS(text, voiceId, cacheKey);
             return audioUrl;
         } catch (error) {
             console.error('Error generating TTS:', error);
@@ -89,25 +71,76 @@ export class TTSService {
         }
     }
 
-    private async generateStreamElementsTTS(text: string, voiceId: string): Promise<string> {
-        const url = `https://api.streamelements.com/kappa/v2/speech?voice=${voiceId}&text=${encodeURIComponent(text)}`;
-        
-        const cacheKey = this.getCacheKey(text, voiceId, {});
+    private async generateGoogleTTS(text: string, lang: string, cacheKey: string): Promise<string> {
         const cachedFile = path.join(this.cacheDir, `${cacheKey}.mp3`);
+        
+        const textChunks = this.splitTextIntoChunks(text, 200);
+        const audioBuffers: Buffer[] = [];
 
-        try {
-            const response = await axios.get(url, { 
-                responseType: 'arraybuffer',
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                }
-            });
-            fs.writeFileSync(cachedFile, response.data);
-            return `/cache/tts/${cacheKey}.mp3`;
-        } catch (error) {
-            console.error('Error with StreamElements TTS:', error);
-            throw error;
+        for (const chunk of textChunks) {
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${lang}&client=tw-ob`;
+            
+            try {
+                const response = await axios.get(url, { 
+                    responseType: 'arraybuffer',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Referer': 'https://translate.google.com/'
+                    },
+                    timeout: 10000
+                });
+                audioBuffers.push(Buffer.from(response.data));
+            } catch (error: any) {
+                console.error('Error with Google TTS chunk:', error?.message);
+                throw error;
+            }
         }
+
+        const combinedBuffer = Buffer.concat(audioBuffers);
+        fs.writeFileSync(cachedFile, combinedBuffer);
+        return `/cache/tts/${cacheKey}.mp3`;
+    }
+
+    private splitTextIntoChunks(text: string, maxLength: number): string[] {
+        if (text.length <= maxLength) {
+            return [text];
+        }
+
+        const chunks: string[] = [];
+        const sentences = text.split(/(?<=[.!?])\s+/);
+        let currentChunk = '';
+
+        for (const sentence of sentences) {
+            if ((currentChunk + ' ' + sentence).trim().length <= maxLength) {
+                currentChunk = (currentChunk + ' ' + sentence).trim();
+            } else {
+                if (currentChunk) {
+                    chunks.push(currentChunk);
+                }
+                if (sentence.length > maxLength) {
+                    const words = sentence.split(' ');
+                    currentChunk = '';
+                    for (const word of words) {
+                        if ((currentChunk + ' ' + word).trim().length <= maxLength) {
+                            currentChunk = (currentChunk + ' ' + word).trim();
+                        } else {
+                            if (currentChunk) {
+                                chunks.push(currentChunk);
+                            }
+                            currentChunk = word;
+                        }
+                    }
+                } else {
+                    currentChunk = sentence;
+                }
+            }
+        }
+
+        if (currentChunk) {
+            chunks.push(currentChunk);
+        }
+
+        return chunks;
     }
 
     private getCacheKey(text: string, voiceId: string, options: { speed?: number; volume?: number }): string {
