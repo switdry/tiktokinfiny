@@ -3,6 +3,7 @@ export interface Comment {
     text: string;
     timestamp: number;
     profilePicUrl?: string;
+    audioUrl?: string;
     raw?: any;
 }
 

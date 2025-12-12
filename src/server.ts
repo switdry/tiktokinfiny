@@ -111,7 +111,7 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
         };
         activeConnections.set(username, connData);
 
-        tiktokConnection.on(WebcastEvent.CHAT, (data: any) => {
+        tiktokConnection.on(WebcastEvent.CHAT, async (data: any) => {
             try {
                 const comment: Comment = {
                     user: data.user?.uniqueId || data.uniqueId || data.nickname || 'Usuario',
@@ -127,6 +127,17 @@ app.post('/api/tiktok/start/:username', async (req: Request, res: Response): Pro
                     
                     console.log(`💬 [${username}] @${comment.user}: ${comment.text.substring(0, 50)}`);
                     
+                    // Generate TTS audio for the comment
+                    let audioUrl: string | undefined = undefined;
+                    try {
+                        const ttsText = `${comment.user} dice: ${comment.text}`;
+                        audioUrl = await ttsService.generateSpeech(ttsText, 'es', 'google', {});
+                        console.log(`🔊 TTS generado: ${audioUrl}`);
+                    } catch (ttsError) {
+                        console.error('Error generando TTS:', ttsError);
+                    }
+                    
+                    comment.audioUrl = audioUrl;
                     broadcastEvent(username, {
                         type: 'comment',
                         data: comment,

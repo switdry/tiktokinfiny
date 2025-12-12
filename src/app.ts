@@ -371,7 +371,7 @@ function handleStreamEvent(event: StreamEvent): void {
     }
 }
 
-function handleComment(comment: Comment): void {
+function handleComment(comment: Comment & { audioUrl?: string }): void {
     state.stats.commentCount++;
     updateStat('commentCount', state.stats.commentCount);
     displayComment(comment);
@@ -380,8 +380,56 @@ function handleComment(comment: Comment): void {
         if (state.settings.filterMentions && !comment.text.includes('@')) {
             return;
         }
-        queueForTTS(comment);
+        
+        // If server sent pre-generated audio, use that
+        if (comment.audioUrl) {
+            playCommentAudio(comment.audioUrl);
+        } else {
+            queueForTTS(comment);
+        }
     }
+}
+
+// Audio queue for playing server-generated TTS
+const audioQueue: string[] = [];
+let isPlayingAudio = false;
+
+function playCommentAudio(audioUrl: string): void {
+    audioQueue.push(audioUrl);
+    if (!isPlayingAudio) {
+        playNextAudio();
+    }
+}
+
+async function playNextAudio(): Promise<void> {
+    if (audioQueue.length === 0) {
+        isPlayingAudio = false;
+        return;
+    }
+    
+    isPlayingAudio = true;
+    const audioUrl = audioQueue.shift()!;
+    
+    try {
+        const audio = new Audio(audioUrl);
+        audio.volume = state.settings.volume;
+        
+        await new Promise<void>((resolve) => {
+            audio.onended = () => resolve();
+            audio.onerror = () => {
+                console.error('Error playing audio:', audioUrl);
+                resolve();
+            };
+            audio.play().catch((e) => {
+                console.error('Playback error:', e);
+                resolve();
+            });
+        });
+    } catch (error) {
+        console.error('Audio error:', error);
+    }
+    
+    setTimeout(() => playNextAudio(), 300);
 }
 
 function handleGift(gift: Gift): void {
